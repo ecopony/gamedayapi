@@ -7,7 +7,7 @@ Right now, will just go get the same game each time you run and print some stuff
 
 Prerequisites: go
 
-To build:
+To build and run:
 ---------
 
     git clone git@github.com:ecopony/go-gameday.git
