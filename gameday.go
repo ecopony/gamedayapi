@@ -1,13 +1,16 @@
 package main
 
-import "fmt"
-import "log"
-import "io/ioutil"
-import "net/http"
-import "encoding/xml"
+import (
+	_ "github.com/lib/pq"
+	"log"
+	"io/ioutil"
+	"net/http"
+	"encoding/xml"
+	"database/sql"
+)
 
 type Game struct{
-    XMLName xml.Name `xml:"game"`
+	XMLName xml.Name `xml:"game"`
 	GameType string `xml:"type,attr"`
 	LocalGameTime string `xml:"local_game_time,attr"`
 	Teams []Team `xml:"team"`
@@ -28,19 +31,45 @@ type Stadium struct{
 }
 
 func main() {
-    resp, err := http.Get("http://gd2.mlb.com/components/game/mlb/year_2014/month_07/day_06/gid_2014_07_06_seamlb_chamlb_1/game.xml")
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer resp.Body.Close()
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        log.Fatal(err)
-    }
+	resp, err := http.Get("http://gd2.mlb.com/components/game/mlb/year_2014/month_07/day_06/gid_2014_07_06_seamlb_chamlb_1/game.xml")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-   var game Game
-   xml.Unmarshal(body, &game)
-   fmt.Println(resp.Status)
-   fmt.Println(string(body))
-   fmt.Println(game)
+	var game Game
+	xml.Unmarshal(body, &game)
+	log.Println(resp.Status)
+	log.Println(string(body))
+	log.Println(game)
+
+	/*
+	Assumes a pg database exists named go-gameday, a role that can access it.
+	Assumes a table called pitches with a character column called code.
+	 */
+	db, err := sql.Open("postgres", "user=go-gameday dbname=go-gameday sslmode=disable")
+//	issues := db.Ping()
+//	log.Println(issue)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows, err :=  db.Query("SELECT code FROM pitches")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var code string
+		err = rows.Scan(&code)
+		log.Println(code)
+	}
 }
