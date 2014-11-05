@@ -5,7 +5,7 @@ Just getting going here.
 
 Right now, will just go get the same game each time you run and print some stuff to the console.
 
-Prerequisites: go
+Prerequisites: go (for the time being also assumes Postgres locally, with a go-gameday database and role, and a pitches table with a code field)
 
 To build and run:
 ---------
@@ -13,7 +13,7 @@ To build and run:
     git clone git@github.com:ecopony/go-gameday.git
     cd go-gameday
     go build gameday.go
-    ./gameday
+    ./gameday sea 2014-07-22
 
 
 Usage Restriction
