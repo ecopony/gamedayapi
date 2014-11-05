@@ -3,11 +3,13 @@ package main
 import (
 	_ "github.com/lib/pq"
 	"log"
+	"bytes"
 	"os"
 	"io/ioutil"
 	"net/http"
 	"encoding/xml"
 	"database/sql"
+	s "strings"
 )
 
 type Game struct{
@@ -42,6 +44,9 @@ func main() {
 
 	log.Println(teamCode)
 	log.Println(date)
+
+	url := epgUrl(date)
+	log.Println(url)
 
 	resp, err := http.Get("http://gd2.mlb.com/components/game/mlb/year_2014/month_07/day_06/gid_2014_07_06_seamlb_chamlb_1/game.xml")
 	if err != nil {
@@ -84,4 +89,28 @@ func main() {
 		err = rows.Scan(&code)
 		log.Println(code)
 	}
+}
+
+func baseUrl() string{
+	return "http://gd2.mlb.com/components/game/mlb/"
+}
+
+func epgUrl(date string) string{
+	var buffer bytes.Buffer
+	buffer.WriteString(baseUrl())
+	buffer.WriteString(datePath(date))
+	return buffer.String()
+}
+
+func datePath(date string) string{
+	// firx this to be date parsing, validating
+	datePieces := s.Split(date, "-")
+	var buffer bytes.Buffer
+	buffer.WriteString("year_")
+	buffer.WriteString(datePieces[0])
+	buffer.WriteString("/month_")
+	buffer.WriteString(datePieces[1])
+	buffer.WriteString("/day_")
+	buffer.WriteString(datePieces[2])
+	return buffer.String()
 }
