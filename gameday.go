@@ -3,6 +3,7 @@ package main
 import (
 	_ "github.com/lib/pq"
 	"log"
+	"os"
 	"io/ioutil"
 	"net/http"
 	"encoding/xml"
@@ -31,6 +32,17 @@ type Stadium struct{
 }
 
 func main() {
+	args := os.Args[1:]
+	if (len(args) != 2) {
+		log.Fatal("Usage: gameday teamCode date")
+	}
+
+	teamCode := args[0]
+	date := args[1]
+
+	log.Println(teamCode)
+	log.Println(date)
+
 	resp, err := http.Get("http://gd2.mlb.com/components/game/mlb/year_2014/month_07/day_06/gid_2014_07_06_seamlb_chamlb_1/game.xml")
 	if err != nil {
 		log.Fatal(err)
