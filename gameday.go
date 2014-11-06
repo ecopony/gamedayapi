@@ -45,8 +45,19 @@ func main() {
 	log.Println(teamCode)
 	log.Println(date)
 
-	url := epgUrl(date)
-	log.Println(url)
+	epgUrl := epgUrl(date)
+	log.Println(epgUrl)
+
+	epgResp, err := http.Get(epgUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer epgResp.Body.Close()
+	epgBody, err := ioutil.ReadAll(epgResp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(string(epgBody))
 
 	resp, err := http.Get("http://gd2.mlb.com/components/game/mlb/year_2014/month_07/day_06/gid_2014_07_06_seamlb_chamlb_1/game.xml")
 	if err != nil {
@@ -99,6 +110,7 @@ func epgUrl(date string) string{
 	var buffer bytes.Buffer
 	buffer.WriteString(baseUrl())
 	buffer.WriteString(datePath(date))
+	buffer.WriteString("/epg.xml")
 	return buffer.String()
 }
 
