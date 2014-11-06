@@ -12,6 +12,19 @@ import (
 	s "strings"
 )
 
+type Epg struct {
+	Date string `xml:"id,attr"`
+	LastModified string `xml:"last_modified,attr"`
+	DisplayTimeZone string `xml:"display_time_zone,attr"`
+	EpgGames []EpgGame `xml:"game"`
+}
+
+type EpgGame struct {
+	CalendarEventId string `xml:"calendar_event_id,attr"`
+	Start string `xml:"start,attr"`
+	Id string `xml:"id,attr"`
+}
+
 type Game struct{
 	XMLName xml.Name `xml:"game"`
 	GameType string `xml:"type,attr"`
@@ -57,7 +70,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(string(epgBody))
+//	log.Println(string(epgBody))
+
+	var epg Epg
+	xml.Unmarshal(epgBody, &epg)
+	log.Println(epg)
+
 
 	resp, err := http.Get("http://gd2.mlb.com/components/game/mlb/year_2014/month_07/day_06/gid_2014_07_06_seamlb_chamlb_1/game.xml")
 	if err != nil {
