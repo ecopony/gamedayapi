@@ -19,10 +19,20 @@ type Epg struct {
 	EpgGames []EpgGame `xml:"game"`
 }
 
+func (e Epg) GidForTeam(teamCode string) string {
+	for _, game := range e.EpgGames {
+		if s.Contains(game.Gameday, s.Join([]string{"_", teamCode, "mlb_"}, "")) {
+			return game.Gameday
+		}
+	}
+	return "" // return an error here as well?
+}
+
 type EpgGame struct {
 	CalendarEventId string `xml:"calendar_event_id,attr"`
 	Start string `xml:"start,attr"`
 	Id string `xml:"id,attr"`
+	Gameday string `xml:"gameday,attr"`
 }
 
 type Game struct{
@@ -55,13 +65,9 @@ func main() {
 	teamCode := args[0]
 	date := args[1]
 
-	log.Println(teamCode)
-	log.Println(date)
+	log.Println("Fetching game for " + teamCode + " on " + date)
 
-	epgUrl := epgUrl(date)
-	log.Println(epgUrl)
-
-	epgResp, err := http.Get(epgUrl)
+	epgResp, err := http.Get(epgUrl(date))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -70,12 +76,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-//	log.Println(string(epgBody))
 
 	var epg Epg
 	xml.Unmarshal(epgBody, &epg)
-	log.Println(epg)
-
+	log.Println(epg.GidForTeam(teamCode))
 
 	resp, err := http.Get("http://gd2.mlb.com/components/game/mlb/year_2014/month_07/day_06/gid_2014_07_06_seamlb_chamlb_1/game.xml")
 	if err != nil {
