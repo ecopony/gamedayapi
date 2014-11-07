@@ -1,14 +1,14 @@
 package main
 
 import (
-	_ "github.com/lib/pq"
+//	_ "github.com/lib/pq"
 	"log"
 	"bytes"
 	"os"
 	"io/ioutil"
 	"net/http"
 	"encoding/xml"
-	"database/sql"
+//	"database/sql"
 	s "strings"
 )
 
@@ -19,10 +19,15 @@ type Epg struct {
 	EpgGames []EpgGame `xml:"game"`
 }
 
+/*
+gids look like: gid_2014_07_22_nynmlb_seamlb_1
+
+Doesn't yet handle doubleheader days. It'll just return the first match it finds for the team.
+ */
 func (e Epg) GidForTeam(teamCode string) string {
 	for _, game := range e.EpgGames {
 		if s.Contains(game.Gameday, s.Join([]string{"_", teamCode, "mlb_"}, "")) {
-			return game.Gameday
+			return "gid_" + game.Gameday
 		}
 	}
 	return "" // return an error here as well?
@@ -35,7 +40,7 @@ type EpgGame struct {
 	Gameday string `xml:"gameday,attr"`
 }
 
-type Game struct{
+type Game struct {
 	XMLName xml.Name `xml:"game"`
 	GameType string `xml:"type,attr"`
 	LocalGameTime string `xml:"local_game_time,attr"`
@@ -43,14 +48,14 @@ type Game struct{
 	Stadium Stadium `xml:"stadium"`
 }
 
-type Team struct{
+type Team struct {
 	XMLName xml.Name `xml:"team"`
 	TeamType string `xml:"type,attr"`
 	Code string `xml:"code,attr"`
 	FileCode string `xml:"file_code,attr"`
 }
 
-type Stadium struct{
+type Stadium struct {
 	XMLName xml.Name `xml:"stadium"`
 	Id string `xml:"id,attr"`
 	Name string `xml:"name,attr"`
@@ -79,9 +84,9 @@ func main() {
 
 	var epg Epg
 	xml.Unmarshal(epgBody, &epg)
-	log.Println(epg.GidForTeam(teamCode))
+	log.Println("Fetching from: " + gameUrl(date, epg.GidForTeam(teamCode)))
 
-	resp, err := http.Get("http://gd2.mlb.com/components/game/mlb/year_2014/month_07/day_06/gid_2014_07_06_seamlb_chamlb_1/game.xml")
+	resp, err := http.Get(gameUrl(date, epg.GidForTeam(teamCode)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -95,48 +100,65 @@ func main() {
 	xml.Unmarshal(body, &game)
 	log.Println(resp.Status)
 	log.Println(string(body))
-	log.Println(game)
 
-	/*
-	Assumes a pg database exists named go-gameday, a role that can access it.
-	Assumes a table called pitches with a character column called code.
-	 */
-	db, err := sql.Open("postgres", "user=go-gameday dbname=go-gameday sslmode=disable")
+//	Assumes a pg database exists named go-gameday, a role that can access it.
+//	Assumes a table called pitches with a character column called code.
+//	db, err := sql.Open("postgres", "user=go-gameday dbname=go-gameday sslmode=disable")
 //	issues := db.Ping()
 //	log.Println(issue)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	rows, err :=  db.Query("SELECT code FROM pitches")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		var code string
-		err = rows.Scan(&code)
-		log.Println(code)
-	}
+//
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	rows, err :=  db.Query("SELECT code FROM pitches")
+//
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	defer rows.Close()
+//
+//	for rows.Next() {
+//		var code string
+//		err = rows.Scan(&code)
+//		log.Println(code)
+//	}
 }
 
-func baseUrl() string{
+func baseUrl() string {
 	return "http://gd2.mlb.com/components/game/mlb/"
 }
 
-func epgUrl(date string) string{
+func dateUrl(date string) string {
 	var buffer bytes.Buffer
 	buffer.WriteString(baseUrl())
 	buffer.WriteString(datePath(date))
+	return buffer.String()
+}
+
+func epgUrl(date string) string {
+	var buffer bytes.Buffer
+	buffer.WriteString(dateUrl(date))
 	buffer.WriteString("/epg.xml")
 	return buffer.String()
 }
 
-func datePath(date string) string{
+func gameDirectoryUrl(date string, gid string) string { // parse the date out of the gid to not have to pass both around
+	var buffer bytes.Buffer
+	buffer.WriteString(baseUrl())
+	buffer.WriteString(datePath(date))
+	buffer.WriteString("/")
+	buffer.WriteString(gid)
+	buffer.WriteString("/")
+	return buffer.String()
+}
+
+func gameUrl(date string, gid string) string { // parse the date out of the gid to not have to pass both around
+	return gameDirectoryUrl(date, gid) + "game.xml"
+}
+
+func datePath(date string) string {
 	// firx this to be date parsing, validating
 	datePieces := s.Split(date, "-")
 	var buffer bytes.Buffer
@@ -148,3 +170,4 @@ func datePath(date string) string{
 	buffer.WriteString(datePieces[2])
 	return buffer.String()
 }
+

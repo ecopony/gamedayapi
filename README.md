@@ -3,9 +3,9 @@ go-gameday
 
 Just getting going here.
 
-Right now, will just go get the same game each time you run and print some stuff to the console.
+Right now, will just go get a game for the team/date provided and output the game xml to the console.
 
-Prerequisites: go (for the time being also assumes Postgres locally, with a go-gameday database and role, and a pitches table with a code field)
+Prerequisites: go
 
 To build and run:
 ---------
