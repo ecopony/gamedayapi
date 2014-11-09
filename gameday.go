@@ -1,14 +1,13 @@
 package main
 
 import (
-//	_ "github.com/lib/pq"
+	"os/user"
 	"log"
 	"bytes"
 	"os"
 	"io/ioutil"
 	"net/http"
 	"encoding/xml"
-//	"database/sql"
 	s "strings"
 )
 
@@ -86,7 +85,14 @@ func main() {
 	xml.Unmarshal(epgBody, &epg)
 	log.Println("Fetching from: " + gameUrl(date, epg.GidForTeam(teamCode)))
 
-	resp, err := http.Get(gameUrl(date, epg.GidForTeam(teamCode)))
+	game := fetchGame(date, epg.GidForTeam(teamCode))
+	log.Println(game)
+}
+
+func fetchGame(date string, gid string) Game {
+	// firx to check to see if it is cached
+
+	resp, err := http.Get(gameUrl(date, gid))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -100,30 +106,17 @@ func main() {
 	xml.Unmarshal(body, &game)
 	log.Println(resp.Status)
 	log.Println(string(body))
+	cacheResponse(gid, "game.xml", body)
+	return game
+}
 
-//	Assumes a pg database exists named go-gameday, a role that can access it.
-//	Assumes a table called pitches with a character column called code.
-//	db, err := sql.Open("postgres", "user=go-gameday dbname=go-gameday sslmode=disable")
-//	issues := db.Ping()
-//	log.Println(issue)
-//
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	rows, err :=  db.Query("SELECT code FROM pitches")
-//
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	defer rows.Close()
-//
-//	for rows.Next() {
-//		var code string
-//		err = rows.Scan(&code)
-//		log.Println(code)
-//	}
+func cacheResponse(gid string, filename string, body []byte) {
+	cachePath := homeDir() + "/go-gameday-cache/" + s.Split(gid, "_")[1] + "/"
+	os.MkdirAll(cachePath, (os.FileMode)(0775))
+	f, err := os.Create(cachePath + gid + "-" + filename)
+	f.Write(body)
+	check(err)
+	defer f.Close()
 }
 
 func baseUrl() string {
@@ -171,3 +164,16 @@ func datePath(date string) string {
 	return buffer.String()
 }
 
+func homeDir() string {
+	usr, err := user.Current()
+	if err != nil {
+		log.Fatal( err )
+	}
+	return usr.HomeDir
+}
+
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
