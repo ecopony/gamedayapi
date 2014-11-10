@@ -11,6 +11,43 @@ import (
 	s "strings"
 )
 
+type Gid struct {
+	Year string
+	Month string
+	Day string
+	Away string
+	Home string
+	GameNumber string
+}
+
+func (gid Gid) String() string {
+	var buffer bytes.Buffer
+	buffer.WriteString("gid_")
+	buffer.WriteString(gid.Year)
+	buffer.WriteString("_")
+	buffer.WriteString(gid.Month)
+	buffer.WriteString("_")
+	buffer.WriteString(gid.Day)
+	buffer.WriteString("_")
+	buffer.WriteString(gid.Away)
+	buffer.WriteString("_")
+	buffer.WriteString(gid.Home)
+	buffer.WriteString("_")
+	buffer.WriteString(gid.GameNumber)
+	return buffer.String()
+}
+
+func (gid Gid) DatePath() string {
+	var buffer bytes.Buffer
+	buffer.WriteString("year_")
+	buffer.WriteString(gid.Year)
+	buffer.WriteString("/month_")
+	buffer.WriteString(gid.Month)
+	buffer.WriteString("/day_")
+	buffer.WriteString(gid.Day)
+	return buffer.String()
+}
+
 type Epg struct {
 	Date string `xml:"id,attr"`
 	LastModified string `xml:"last_modified,attr"`
@@ -23,13 +60,14 @@ gids look like: gid_2014_07_22_nynmlb_seamlb_1
 
 Doesn't yet handle doubleheader days. It'll just return the first match it finds for the team.
  */
-func (e Epg) GidForTeam(teamCode string) string {
+func (e Epg) GidForTeam(teamCode string) Gid {
 	for _, game := range e.EpgGames {
 		if s.Contains(game.Gameday, s.Join([]string{"_", teamCode, "mlb_"}, "")) {
-			return "gid_" + game.Gameday
+			gamedayPieces := s.Split(game.Gameday, "_")
+			return Gid{gamedayPieces[0], gamedayPieces[1], gamedayPieces[2], gamedayPieces[3], gamedayPieces[4], gamedayPieces[5]}
 		}
 	}
-	return "" // return an error here as well?
+	return Gid{} // this should be an error
 }
 
 type EpgGame struct {
@@ -83,16 +121,16 @@ func main() {
 
 	var epg Epg
 	xml.Unmarshal(epgBody, &epg)
-	log.Println("Fetching from: " + gameUrl(date, epg.GidForTeam(teamCode)))
+	gid := epg.GidForTeam(teamCode)
 
-	game := fetchGame(date, epg.GidForTeam(teamCode))
+	game := fetchGame(&gid)
 	log.Println(game)
 }
 
-func fetchGame(date string, gid string) Game {
+func fetchGame(gid *Gid) Game {
 	// firx to check to see if it is cached
 
-	resp, err := http.Get(gameUrl(date, gid))
+	resp, err := http.Get(gameUrl(gid))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -110,10 +148,10 @@ func fetchGame(date string, gid string) Game {
 	return game
 }
 
-func cacheResponse(gid string, filename string, body []byte) {
-	cachePath := homeDir() + "/go-gameday-cache/" + s.Split(gid, "_")[1] + "/"
+func cacheResponse(gid *Gid, filename string, body []byte) {
+	cachePath := homeDir() + "/go-gameday-cache/" + gid.Year + "/"
 	os.MkdirAll(cachePath, (os.FileMode)(0775))
-	f, err := os.Create(cachePath + gid + "-" + filename)
+	f, err := os.Create(cachePath + gid.String() + "-" + filename)
 	f.Write(body)
 	check(err)
 	defer f.Close()
@@ -137,18 +175,18 @@ func epgUrl(date string) string {
 	return buffer.String()
 }
 
-func gameDirectoryUrl(date string, gid string) string { // parse the date out of the gid to not have to pass both around
+func gameDirectoryUrl(gid *Gid) string {
 	var buffer bytes.Buffer
 	buffer.WriteString(baseUrl())
-	buffer.WriteString(datePath(date))
+	buffer.WriteString(gid.DatePath())
 	buffer.WriteString("/")
-	buffer.WriteString(gid)
+	buffer.WriteString(gid.String())
 	buffer.WriteString("/")
 	return buffer.String()
 }
 
-func gameUrl(date string, gid string) string { // parse the date out of the gid to not have to pass both around
-	return gameDirectoryUrl(date, gid) + "game.xml"
+func gameUrl(gid *Gid) string {
+	return gameDirectoryUrl(gid) + "game.xml"
 }
 
 func datePath(date string) string {
