@@ -128,7 +128,8 @@ func main() {
 }
 
 func fetchGame(gid *Gid) Game {
-	// firx to check to see if it is cached
+	var game Game
+	gameFileName := "game.xml"
 
 	resp, err := http.Get(gameUrl(gid))
 	if err != nil {
@@ -140,18 +141,17 @@ func fetchGame(gid *Gid) Game {
 		log.Fatal(err)
 	}
 
-	var game Game
 	xml.Unmarshal(body, &game)
 	log.Println(resp.Status)
 	log.Println(string(body))
-	cacheResponse(gid, "game.xml", body)
+	cacheResponse(gid, gameFileName, body)
 	return game
 }
 
 func cacheResponse(gid *Gid, filename string, body []byte) {
-	cachePath := homeDir() + "/go-gameday-cache/" + gid.Year + "/"
+	cachePath := cachePath(gid)
 	os.MkdirAll(cachePath, (os.FileMode)(0775))
-	f, err := os.Create(cachePath + gid.String() + "-" + filename)
+	f, err := os.Create(cachePath + cacheFileName(gid, filename))
 	f.Write(body)
 	check(err)
 	defer f.Close()
@@ -208,6 +208,14 @@ func homeDir() string {
 		log.Fatal( err )
 	}
 	return usr.HomeDir
+}
+
+func cachePath(gid *Gid) string {
+	return homeDir() + "/go-gameday-cache/" + gid.Year + "/"
+}
+
+func cacheFileName(gid *Gid, filename string) string {
+	return gid.String() + "-" + filename
 }
 
 func check(e error) {
