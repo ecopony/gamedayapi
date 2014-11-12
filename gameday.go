@@ -60,7 +60,7 @@ gids look like: gid_2014_07_22_nynmlb_seamlb_1
 
 Doesn't yet handle doubleheader days. It'll just return the first match it finds for the team.
  */
-func (e Epg) GidForTeam(teamCode string) Gid {
+func (e *Epg) GidForTeam(teamCode string) Gid {
 	for _, game := range e.EpgGames {
 		if s.Contains(game.Gameday, s.Join([]string{"_", teamCode, "mlb_"}, "")) {
 			gamedayPieces := s.Split(game.Gameday, "_")
@@ -130,21 +130,32 @@ func main() {
 func fetchGame(gid *Gid) Game {
 	var game Game
 	gameFileName := "game.xml"
+	cachedFileName := cachePath(gid) + cacheFileName(gid, gameFileName)
 
-	resp, err := http.Get(gameUrl(gid))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
+	if _, err := os.Stat(cachedFileName); os.IsNotExist(err) {
+		log.Println("No cache hit - go get it")
+
+		resp, err := http.Get(gameUrl(gid))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		xml.Unmarshal(body, &game)
+		log.Println(resp.Status)
+		log.Println(string(body))
+		cacheResponse(gid, gameFileName, body)
+	} else {
+		log.Println("Cache hit - load it up")
+		body, _ := ioutil.ReadFile(cachedFileName)
+		log.Println(string(body))
+		xml.Unmarshal(body, &game)
 	}
 
-	xml.Unmarshal(body, &game)
-	log.Println(resp.Status)
-	log.Println(string(body))
-	cacheResponse(gid, gameFileName, body)
 	return game
 }
 
