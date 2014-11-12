@@ -1,4 +1,4 @@
-package main
+package gamedayapi
 
 import (
 	"os/user"
@@ -11,72 +11,6 @@ import (
 	s "strings"
 )
 
-type Gid struct {
-	Year string
-	Month string
-	Day string
-	Away string
-	Home string
-	GameNumber string
-}
-
-func (gid Gid) String() string {
-	var buffer bytes.Buffer
-	buffer.WriteString("gid_")
-	buffer.WriteString(gid.Year)
-	buffer.WriteString("_")
-	buffer.WriteString(gid.Month)
-	buffer.WriteString("_")
-	buffer.WriteString(gid.Day)
-	buffer.WriteString("_")
-	buffer.WriteString(gid.Away)
-	buffer.WriteString("_")
-	buffer.WriteString(gid.Home)
-	buffer.WriteString("_")
-	buffer.WriteString(gid.GameNumber)
-	return buffer.String()
-}
-
-func (gid Gid) DatePath() string {
-	var buffer bytes.Buffer
-	buffer.WriteString("year_")
-	buffer.WriteString(gid.Year)
-	buffer.WriteString("/month_")
-	buffer.WriteString(gid.Month)
-	buffer.WriteString("/day_")
-	buffer.WriteString(gid.Day)
-	return buffer.String()
-}
-
-type Epg struct {
-	Date string `xml:"id,attr"`
-	LastModified string `xml:"last_modified,attr"`
-	DisplayTimeZone string `xml:"display_time_zone,attr"`
-	EpgGames []EpgGame `xml:"game"`
-}
-
-/*
-gids look like: gid_2014_07_22_nynmlb_seamlb_1
-
-Doesn't yet handle doubleheader days. It'll just return the first match it finds for the team.
- */
-func (e *Epg) GidForTeam(teamCode string) Gid {
-	for _, game := range e.EpgGames {
-		if s.Contains(game.Gameday, s.Join([]string{"_", teamCode, "mlb_"}, "")) {
-			gamedayPieces := s.Split(game.Gameday, "_")
-			return Gid{gamedayPieces[0], gamedayPieces[1], gamedayPieces[2], gamedayPieces[3], gamedayPieces[4], gamedayPieces[5]}
-		}
-	}
-	return Gid{} // this should be an error
-}
-
-type EpgGame struct {
-	CalendarEventId string `xml:"calendar_event_id,attr"`
-	Start string `xml:"start,attr"`
-	Id string `xml:"id,attr"`
-	Gameday string `xml:"gameday,attr"`
-}
-
 type Game struct {
 	XMLName xml.Name `xml:"game"`
 	GameType string `xml:"type,attr"`
@@ -85,28 +19,7 @@ type Game struct {
 	Stadium Stadium `xml:"stadium"`
 }
 
-type Team struct {
-	XMLName xml.Name `xml:"team"`
-	TeamType string `xml:"type,attr"`
-	Code string `xml:"code,attr"`
-	FileCode string `xml:"file_code,attr"`
-}
-
-type Stadium struct {
-	XMLName xml.Name `xml:"stadium"`
-	Id string `xml:"id,attr"`
-	Name string `xml:"name,attr"`
-}
-
-func main() {
-	args := os.Args[1:]
-	if (len(args) != 2) {
-		log.Fatal("Usage: gameday teamCode date")
-	}
-
-	teamCode := args[0]
-	date := args[1]
-
+func Doit(teamCode string, date string) {
 	log.Println("Fetching game for " + teamCode + " on " + date)
 
 	epgResp, err := http.Get(epgUrl(date))
@@ -125,6 +38,19 @@ func main() {
 
 	game := fetchGame(&gid)
 	log.Println(game)
+}
+
+type Team struct {
+	XMLName xml.Name `xml:"team"`
+	TeamType string `xml:"type,attr"`
+	Code string `xml:"code,attr"`
+	FileCode string `xml:"file_code,attr"`
+}
+
+type Stadium struct {
+	XMLName xml.Name `xml:"stadium"`
+	Id string `xml:"id,attr"`
+	Name string `xml:"name,attr"`
 }
 
 func fetchGame(gid *Gid) Game {

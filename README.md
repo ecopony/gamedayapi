@@ -1,5 +1,5 @@
-go-gameday
-==========
+gamedayapi - an mlb gameday api for go
+======================================
 
 Just getting going here.
 
@@ -7,13 +7,15 @@ Right now, will just go get a game for the team/date provided and output the gam
 
 Prerequisites: go
 
-To build and run:
+To build and run
 ---------
 
-    git clone git@github.com:ecopony/go-gameday.git
-    cd go-gameday
-    go build gameday.go
-    ./gameday sea 2014-07-22
+In your go workspace, under a directory github.com/ecopony/
+
+    git clone git@github.com:ecopony/gamedayapi.git
+    cd gamedayapi
+    go build gameday/mlbgd.go
+    ./mlbgd sea 2014-07-22
 
 
 Usage Restriction
