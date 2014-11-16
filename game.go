@@ -16,15 +16,14 @@ type Game struct {
 	Stadium Stadium `xml:"stadium"`
 }
 
-func GameFor(teamCode string, date string) Game {
-	var epg Epg
-	epg.For(date)
+func GameFor(teamCode string, date string) *Game {
+	epg := EpgFor(date)
 	gid := epg.GidForTeam(teamCode)
-	game := fetchGame(&gid)
+	game := fetchGame(gid)
 	return game
 }
 
-func fetchGame(gid *Gid) Game {
+func fetchGame(gid *Gid) *Game {
 	log.Println("Fetching game " + gid.String())
 	var game Game
 	gameFileName := "game.xml"
@@ -54,5 +53,5 @@ func fetchGame(gid *Gid) Game {
 		xml.Unmarshal(body, &game)
 	}
 
-	return game
+	return &game
 }
