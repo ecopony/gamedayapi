@@ -40,19 +40,6 @@ func Init(teamCode string, date string) {
 	log.Println(game)
 }
 
-type Team struct {
-	XMLName xml.Name `xml:"team"`
-	TeamType string `xml:"type,attr"`
-	Code string `xml:"code,attr"`
-	FileCode string `xml:"file_code,attr"`
-}
-
-type Stadium struct {
-	XMLName xml.Name `xml:"stadium"`
-	Id string `xml:"id,attr"`
-	Name string `xml:"name,attr"`
-}
-
 func fetchGame(gid *Gid) Game {
 	var game Game
 	gameFileName := "game.xml"
