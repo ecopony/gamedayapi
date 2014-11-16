@@ -11,6 +11,10 @@ import (
 	s "strings"
 )
 
+const (
+	BaseUrl = "http://gd2.mlb.com/components/game/mlb/"
+)
+
 type Game struct {
 	XMLName xml.Name `xml:"game"`
 	GameType string `xml:"type,attr"`
@@ -81,13 +85,9 @@ func cacheResponse(gid *Gid, filename string, body []byte) {
 	defer f.Close()
 }
 
-func baseUrl() string {
-	return "http://gd2.mlb.com/components/game/mlb/"
-}
-
 func dateUrl(date string) string {
 	var buffer bytes.Buffer
-	buffer.WriteString(baseUrl())
+	buffer.WriteString(BaseUrl)
 	buffer.WriteString(datePath(date))
 	return buffer.String()
 }
@@ -101,7 +101,7 @@ func epgUrl(date string) string {
 
 func gameDirectoryUrl(gid *Gid) string {
 	var buffer bytes.Buffer
-	buffer.WriteString(baseUrl())
+	buffer.WriteString(BaseUrl)
 	buffer.WriteString(gid.DatePath())
 	buffer.WriteString("/")
 	buffer.WriteString(gid.String())
