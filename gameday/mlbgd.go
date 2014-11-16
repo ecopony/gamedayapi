@@ -15,5 +15,5 @@ func main() {
 	teamCode := args[0]
 	date := args[1]
 
-	gamedayapi.Doit(teamCode, date)
+	gamedayapi.Init(teamCode, date)
 }

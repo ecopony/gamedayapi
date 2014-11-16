@@ -19,7 +19,7 @@ type Game struct {
 	Stadium Stadium `xml:"stadium"`
 }
 
-func Doit(teamCode string, date string) {
+func Init(teamCode string, date string) {
 	log.Println("Fetching game for " + teamCode + " on " + date)
 
 	epgResp, err := http.Get(epgUrl(date))
