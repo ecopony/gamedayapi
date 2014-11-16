@@ -58,10 +58,6 @@ func homeDir() string {
 	return usr.HomeDir
 }
 
-func cachePath(gid *Gid) string {
-	return homeDir() + "/go-gameday-cache/" + gid.Year + "/"
-}
-
 func cacheFileName(gid *Gid, filename string) string {
 	return gid.String() + "-" + filename
 }
