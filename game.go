@@ -23,25 +23,12 @@ type Game struct {
 	Stadium Stadium `xml:"stadium"`
 }
 
-func Init(teamCode string, date string) {
+func (game Game) For(teamCode string, date string) {
 	log.Println("Fetching game for " + teamCode + " on " + date)
-
-	epgResp, err := http.Get(epgUrl(date))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer epgResp.Body.Close()
-	epgBody, err := ioutil.ReadAll(epgResp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	var epg Epg
-	xml.Unmarshal(epgBody, &epg)
+	epg.For(date)
 	gid := epg.GidForTeam(teamCode)
-
-	game := fetchGame(&gid)
-	log.Println(game)
+	game = fetchGame(&gid)
 }
 
 func fetchGame(gid *Gid) Game {
@@ -89,13 +76,6 @@ func dateUrl(date string) string {
 	var buffer bytes.Buffer
 	buffer.WriteString(BaseUrl)
 	buffer.WriteString(datePath(date))
-	return buffer.String()
-}
-
-func epgUrl(date string) string {
-	var buffer bytes.Buffer
-	buffer.WriteString(dateUrl(date))
-	buffer.WriteString("/epg.xml")
 	return buffer.String()
 }
 

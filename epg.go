@@ -1,6 +1,11 @@
 package gamedayapi
 
 import (
+	"log"
+	"bytes"
+	"io/ioutil"
+	"net/http"
+	"encoding/xml"
 	s "strings"
 )
 
@@ -9,6 +14,20 @@ type Epg struct {
 	LastModified string `xml:"last_modified,attr"`
 	DisplayTimeZone string `xml:"display_time_zone,attr"`
 	EpgGames []EpgGame `xml:"game"`
+}
+
+func (epg *Epg) For(date string) {
+	log.Println("Fetching epg for " + date)
+	epgResp, err := http.Get(epgUrl(date))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer epgResp.Body.Close()
+	epgBody, err := ioutil.ReadAll(epgResp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	xml.Unmarshal(epgBody, &epg)
 }
 
 /*
@@ -31,4 +50,11 @@ type EpgGame struct {
 	Start string `xml:"start,attr"`
 	Id string `xml:"id,attr"`
 	Gameday string `xml:"gameday,attr"`
+}
+
+func epgUrl(date string) string {
+	var buffer bytes.Buffer
+	buffer.WriteString(dateUrl(date))
+	buffer.WriteString("/epg.xml")
+	return buffer.String()
 }
