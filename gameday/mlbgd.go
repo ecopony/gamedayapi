@@ -15,6 +15,6 @@ func main() {
 	teamCode := args[0]
 	date := args[1]
 
-	var game gamedayapi.Game
-	game.For(teamCode, date)
+	game := gamedayapi.GameFor(teamCode, date)
+	log.Println(game)
 }
