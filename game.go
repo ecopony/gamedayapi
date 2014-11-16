@@ -27,7 +27,7 @@ func fetchGame(gid *Gid) *Game {
 	log.Println("Fetching game " + gid.String())
 	var game Game
 	gameFileName := "game.xml"
-	cachedFileName := cachePath(gid) + cacheFileName(gid, gameFileName)
+	cachedFileName := gid.CachePath() + cacheFileName(gid, gameFileName)
 
 	if _, err := os.Stat(cachedFileName); os.IsNotExist(err) {
 		log.Println("No cache hit - go get it")

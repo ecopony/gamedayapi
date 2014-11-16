@@ -26,9 +26,8 @@ func datePath(date string) string {
 }
 
 func cacheResponse(gid *Gid, filename string, body []byte) {
-	cachePath := cachePath(gid)
-	os.MkdirAll(cachePath, (os.FileMode)(0775))
-	f, err := os.Create(cachePath + cacheFileName(gid, filename))
+	os.MkdirAll(gid.CachePath(), (os.FileMode)(0775))
+	f, err := os.Create(gid.CachePath() + cacheFileName(gid, filename))
 	f.Write(body)
 	check(err)
 	defer f.Close()

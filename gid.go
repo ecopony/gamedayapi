@@ -40,3 +40,7 @@ func (gid Gid) DatePath() string {
 	buffer.WriteString(gid.Day)
 	return buffer.String()
 }
+
+func (gid Gid) CachePath() string {
+	return homeDir() + "/go-gameday-cache/" + gid.Year + "/"
+}
