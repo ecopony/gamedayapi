@@ -1,57 +1,33 @@
 package gamedayapi
 
-import (
-	"log"
-	"os"
-	"io/ioutil"
-	"net/http"
-	"encoding/xml"
-)
-
 type Game struct {
-	XMLName xml.Name `xml:"game"`
-	GameType string `xml:"type,attr"`
-	LocalGameTime string `xml:"local_game_time,attr"`
-	Teams []Team `xml:"team"`
-	Stadium Stadium `xml:"stadium"`
+	AwayAPMP     string          `xml:"away_ampm,attr"`
+	AwayLoss     string          `xml:"away_loss,attr"`
+	AwayTeamCity string          `xml:"away_team_city,attr"`
+	AwayCode 	 string          `xml:"away_code,attr"`
+	AwayTeamId   string          `xml:"away_team_id,attr"`
+	AwayTeamName string          `xml:"away_team_name,attr"`
+	AwayTime     string          `xml:"away_time,attr"`
+	AwayTimezone string          `xml:"away_time_zone,attr"`
+	AwayWin      string          `xml:"away_win,attr"`
+	HomeAMPM     string          `xml:"home_ampm,attr"`
+	HomeLoss     string          `xml:"home_loss,attr"`
+	HomeTeamCity string          `xml:"home_team_city,attr"`
+	HomeCode	 string          `xml:"home_code,attr"`
+	HomeTeamId   string          `xml:"home_team_id,attr"`
+	HomeTeamName string          `xml:"home_team_name,attr"`
+	HomeTime     string          `xml:"home_time,attr"`
+	HomeTimezone string          `xml:"home_time_zone,attr"`
+	HomeWin      string          `xml:"home_win,attr"`
+	Id           string          `xml:"id,attr"`
+	GamePk	     string          `xml:"game_pk,attr"`
+	Timezone     string          `xml:"time_zone,attr"`
+	Venue        string          `xml:"venue,attr"`
+	GameDataDirectory string     `xml:"game_data_directory,attr"`
 }
 
 func GameFor(teamCode string, date string) *Game {
 	epg := EpgFor(date)
-	gid := epg.GidForTeam(teamCode)
-	game := fetchGame(gid)
+	game := epg.GameForTeam(teamCode)
 	return game
-}
-
-func fetchGame(gid *Gid) *Game {
-	log.Println("Fetching game " + gid.String())
-	var game Game
-	gameFileName := "game.xml"
-	cachedFileName := gid.CachePath() + cacheFileName(gid, gameFileName)
-
-	if _, err := os.Stat(cachedFileName); os.IsNotExist(err) {
-		log.Println("No cache hit - go get it")
-
-		resp, err := http.Get(gameDirectoryUrl(gid) + gameFileName)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		xml.Unmarshal(body, &game)
-		log.Println(resp.Status)
-		log.Println(string(body))
-		cacheResponse(gid, gameFileName, body)
-	} else {
-		log.Println("Cache hit - load it up")
-		body, _ := ioutil.ReadFile(cachedFileName)
-		log.Println(string(body))
-		xml.Unmarshal(body, &game)
-	}
-
-	return &game
 }

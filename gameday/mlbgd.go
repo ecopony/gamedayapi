@@ -16,5 +16,5 @@ func main() {
 	date := args[1]
 
 	game := gamedayapi.GameFor(teamCode, date)
-	log.Println(game)
+	log.Println(game.GameDataDirectory)
 }

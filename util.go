@@ -4,7 +4,6 @@ import (
 	"os/user"
 	"log"
 	"bytes"
-	"os"
 	s "strings"
 )
 
@@ -25,28 +24,10 @@ func datePath(date string) string {
 	return buffer.String()
 }
 
-func cacheResponse(gid *Gid, filename string, body []byte) {
-	os.MkdirAll(gid.CachePath(), (os.FileMode)(0775))
-	f, err := os.Create(gid.CachePath() + cacheFileName(gid, filename))
-	f.Write(body)
-	check(err)
-	defer f.Close()
-}
-
 func dateUrl(date string) string {
 	var buffer bytes.Buffer
 	buffer.WriteString(BaseUrl)
 	buffer.WriteString(datePath(date))
-	return buffer.String()
-}
-
-func gameDirectoryUrl(gid *Gid) string {
-	var buffer bytes.Buffer
-	buffer.WriteString(BaseUrl)
-	buffer.WriteString(gid.DatePath())
-	buffer.WriteString("/")
-	buffer.WriteString(gid.String())
-	buffer.WriteString("/")
 	return buffer.String()
 }
 
@@ -60,10 +41,6 @@ func homeDir() string {
 
 func BaseCachePath() string {
 	return homeDir() + "/go-gameday-cache/"
-}
-
-func cacheFileName(gid *Gid, filename string) string {
-	return gid.String() + "-" + filename
 }
 
 func check(e error) {
