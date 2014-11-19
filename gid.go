@@ -42,5 +42,5 @@ func (gid Gid) DatePath() string {
 }
 
 func (gid Gid) CachePath() string {
-	return homeDir() + "/go-gameday-cache/" + gid.Year + "/"
+	return BaseCachePath() + gid.Year + "/"
 }

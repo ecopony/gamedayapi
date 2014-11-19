@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"encoding/xml"
+	"os"
 	s "strings"
 )
 
@@ -19,16 +20,29 @@ type Epg struct {
 func EpgFor(date string) *Epg {
 	var epg Epg
 	log.Println("Fetching epg for " + date)
-	epgResp, err := http.Get(epgUrl(date))
-	if err != nil {
-		log.Fatal(err)
+	year := s.Split(date, "-")[0]
+	cachedFilePath := BaseCachePath() + year + "/"
+	cachedFileName := EpgCacheFileName(date)
+
+	if _, err := os.Stat(cachedFilePath + cachedFileName); os.IsNotExist(err) {
+		log.Println("No epg cache hit - go get it")
+		epgResp, err := http.Get(EpgUrl(date))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer epgResp.Body.Close()
+		epgBody, err := ioutil.ReadAll(epgResp.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		xml.Unmarshal(epgBody, &epg)
+		CacheEpgResponse(cachedFilePath, cachedFileName, epgBody)
+	} else {
+		log.Println("EPG cache hit - load it up")
+		body, _ := ioutil.ReadFile(cachedFilePath + cachedFileName)
+		xml.Unmarshal(body, &epg)
 	}
-	defer epgResp.Body.Close()
-	epgBody, err := ioutil.ReadAll(epgResp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	xml.Unmarshal(epgBody, &epg)
+
 	return &epg
 }
 
@@ -54,9 +68,22 @@ type EpgGame struct {
 	Gameday string `xml:"gameday,attr"`
 }
 
-func epgUrl(date string) string {
+func EpgUrl(date string) string {
 	var buffer bytes.Buffer
 	buffer.WriteString(dateUrl(date))
 	buffer.WriteString("/epg.xml")
 	return buffer.String()
 }
+
+func EpgCacheFileName(date string) string {
+	return date + "-" + "epg.xml"
+}
+
+func CacheEpgResponse(path string, filename string, body []byte) {
+	os.MkdirAll(path, (os.FileMode)(0775))
+	f, err := os.Create(path + filename)
+	f.Write(body)
+	check(err)
+	defer f.Close()
+}
+
