@@ -21,7 +21,7 @@ func EpgFor(date string) *Epg {
 	var epg Epg
 	log.Println("Fetching epg for " + date)
 	year := s.Split(date, "-")[0]
-	cachedFilePath := BaseCachePath() + year + "/"
+	cachedFilePath := BaseCachePath() + "/" + year + "/"
 	cachedFileName := EpgCacheFileName(date)
 
 	if _, err := os.Stat(cachedFilePath + cachedFileName); os.IsNotExist(err) {

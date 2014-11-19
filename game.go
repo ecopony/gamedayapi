@@ -1,5 +1,14 @@
 package gamedayapi
 
+import (
+	"log"
+	"os"
+	"net/http"
+	"io/ioutil"
+	"encoding/xml"
+	s "strings"
+)
+
 type Game struct {
 	AwayAPMP			string		`xml:"away_ampm,attr"`
 	AwayCode			string		`xml:"away_code,attr"`
@@ -24,6 +33,8 @@ type Game struct {
 	Timezone			string		`xml:"time_zone,attr"`
 	Venue				string		`xml:"venue,attr"`
 	GameDataDirectory	string		`xml:"game_data_directory,attr"`
+
+	boxScore BoxScore
 }
 
 func GameFor(teamCode string, date string) *Game {
@@ -31,3 +42,44 @@ func GameFor(teamCode string, date string) *Game {
 	game := epg.GameForTeam(teamCode)
 	return game
 }
+
+func (game *Game) BoxScore() *BoxScore {
+	if len(game.boxScore.GameId) == 0 {
+		filePath := BaseCachePath() + game.GameDataDirectory + "/boxscore.xml"
+		if _, err := os.Stat(filePath); os.IsNotExist(err) {
+			fetchAndCache(filePath, &game.boxScore)
+		} else {
+			body, _ := ioutil.ReadFile(filePath)
+			xml.Unmarshal(body, &game.boxScore)
+		}
+	}
+	return &game.boxScore
+}
+
+func fetchAndCache(filePath string, val interface{}) {
+	resp, err := http.Get(GamedayHostname + filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	xml.Unmarshal(body, val)
+	cacheFile(filePath, body)
+}
+
+func cacheFile(filePath string, body []byte) {
+	localCachePath := BaseCachePath() + filePath[0:s.LastIndex(filePath, "/")]
+	log.Println(localCachePath)
+	os.MkdirAll(localCachePath, (os.FileMode)(0775))
+	log.Println(filePath[s.LastIndex(filePath, "/"):])
+	f, err := os.Create(localCachePath + filePath[s.LastIndex(filePath, "/"):])
+	f.Write(body)
+	check(err)
+	defer f.Close()
+}
+
+

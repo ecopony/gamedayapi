@@ -8,14 +8,16 @@ import (
 )
 
 const (
-	BaseUrl = "http://gd2.mlb.com/components/game/mlb/"
+	GamedayHostname = "http://gd2.mlb.com"
+	GamedayBaseUrl = "http://gd2.mlb.com/components/game/mlb"
+
 )
 
 func datePath(date string) string {
 	// firx this to be date parsing, validating
 	datePieces := s.Split(date, "-")
 	var buffer bytes.Buffer
-	buffer.WriteString("year_")
+	buffer.WriteString("/year_")
 	buffer.WriteString(datePieces[0])
 	buffer.WriteString("/month_")
 	buffer.WriteString(datePieces[1])
@@ -26,7 +28,7 @@ func datePath(date string) string {
 
 func dateUrl(date string) string {
 	var buffer bytes.Buffer
-	buffer.WriteString(BaseUrl)
+	buffer.WriteString(GamedayBaseUrl)
 	buffer.WriteString(datePath(date))
 	return buffer.String()
 }
@@ -40,7 +42,7 @@ func homeDir() string {
 }
 
 func BaseCachePath() string {
-	return homeDir() + "/go-gameday-cache/"
+	return homeDir() + "/go-gameday-cache"
 }
 
 func check(e error) {
