@@ -45,7 +45,7 @@ func GameFor(teamCode string, date string) *Game {
 
 func (game *Game) BoxScore() *BoxScore {
 	if len(game.boxScore.GameId) == 0 {
-		filePath := BaseCachePath() + game.GameDataDirectory + "/boxscore.xml"
+		filePath := game.GameDataDirectory + "/boxscore.xml"
 		if _, err := os.Stat(filePath); os.IsNotExist(err) {
 			fetchAndCache(filePath, &game.boxScore)
 		} else {
@@ -73,13 +73,9 @@ func fetchAndCache(filePath string, val interface{}) {
 
 func cacheFile(filePath string, body []byte) {
 	localCachePath := BaseCachePath() + filePath[0:s.LastIndex(filePath, "/")]
-	log.Println(localCachePath)
 	os.MkdirAll(localCachePath, (os.FileMode)(0775))
-	log.Println(filePath[s.LastIndex(filePath, "/"):])
 	f, err := os.Create(localCachePath + filePath[s.LastIndex(filePath, "/"):])
 	f.Write(body)
 	check(err)
 	defer f.Close()
 }
-
-
