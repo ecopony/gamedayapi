@@ -45,18 +45,25 @@ func GameFor(teamCode string, date string) *Game {
 
 func (game *Game) BoxScore() *BoxScore {
 	if len(game.boxScore.GameId) == 0 {
-		filePath := game.GameDataDirectory + "/boxscore.xml"
-		if _, err := os.Stat(filePath); os.IsNotExist(err) {
-			fetchAndCache(filePath, &game.boxScore)
-		} else {
-			body, _ := ioutil.ReadFile(filePath)
-			xml.Unmarshal(body, &game.boxScore)
-		}
+		game.load("/boxscore.xml", &game.boxScore)
 	}
 	return &game.boxScore
 }
 
+func (game Game) load(fileName string, val interface{}) {
+	filePath := game.GameDataDirectory + fileName
+	localFilePath := BaseCachePath() + filePath
+	if _, err := os.Stat(localFilePath); os.IsNotExist(err) {
+		log.Println("Cache miss on " + localFilePath)
+		fetchAndCache(filePath, val)
+	} else {
+		body, _ := ioutil.ReadFile(localFilePath)
+		xml.Unmarshal(body, val)
+	}
+}
+
 func fetchAndCache(filePath string, val interface{}) {
+	log.Println("Fetching " + filePath + " from MLB")
 	resp, err := http.Get(GamedayHostname + filePath)
 	if err != nil {
 		log.Fatal(err)

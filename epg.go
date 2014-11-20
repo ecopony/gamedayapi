@@ -19,13 +19,13 @@ type Epg struct {
 
 func EpgFor(date string) *Epg {
 	var epg Epg
-	log.Println("Fetching epg for " + date)
 	year := s.Split(date, "-")[0]
 	cachedFilePath := BaseCachePath() + "/" + year + "/"
 	cachedFileName := EpgCacheFileName(date)
 
 	if _, err := os.Stat(cachedFilePath + cachedFileName); os.IsNotExist(err) {
-		log.Println("No epg cache hit - go get it")
+		log.Println("Fetching epg for " + date + " from MLB")
+
 		epgResp, err := http.Get(EpgUrl(date))
 		if err != nil {
 			log.Fatal(err)
@@ -38,7 +38,6 @@ func EpgFor(date string) *Epg {
 		xml.Unmarshal(epgBody, &epg)
 		CacheEpgResponse(cachedFilePath, cachedFileName, epgBody)
 	} else {
-		log.Println("EPG cache hit - load it up")
 		body, _ := ioutil.ReadFile(cachedFilePath + cachedFileName)
 		xml.Unmarshal(body, &epg)
 	}
