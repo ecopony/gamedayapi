@@ -22,7 +22,3 @@ type Bottom struct {
 	XMLName xml.Name `xml:"bottom"`
 	AtBats []AtBat `xml:"atbat"`
 }
-
-type AtBat struct {
-	Num				string		`xml:"num,attr"`
-}

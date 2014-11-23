@@ -18,5 +18,5 @@ func main() {
 	game := gamedayapi.GameFor(teamCode, date)
 	log.Println(game.GameDataDirectory)
 	log.Println(game.BoxScore().GameId)
-	log.Println(game.AllInnings().Innings[0].Bottom.AtBats[0].Num)
+	log.Println(game.AllInnings().Innings[0].Top.AtBats[0].Pitches[0].Des)
 }
