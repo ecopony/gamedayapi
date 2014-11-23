@@ -35,6 +35,7 @@ type Game struct {
 	GameDataDirectory	string		`xml:"game_data_directory,attr"`
 
 	boxScore BoxScore
+	allInnings AllInnings
 }
 
 func GameFor(teamCode string, date string) *Game {
@@ -48,6 +49,13 @@ func (game *Game) BoxScore() *BoxScore {
 		game.load("/boxscore.xml", &game.boxScore)
 	}
 	return &game.boxScore
+}
+
+func (game *Game) AllInnings() *AllInnings {
+	if len(game.allInnings.AtBat) == 0 {
+		game.load("/inning/inning_all.xml", &game.allInnings)
+	}
+	return &game.allInnings
 }
 
 func (game Game) load(fileName string, val interface{}) {
