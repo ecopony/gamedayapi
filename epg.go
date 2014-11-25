@@ -11,6 +11,8 @@ import (
 	s "strings"
 )
 
+// Epg represents the epg.xml file that is in the root of each day's directory.
+// It is essentially the schedule for the day.
 type Epg struct {
 	Date            string `xml:"date,attr"`
 	LastModified    string `xml:"last_modified,attr"`
@@ -18,16 +20,18 @@ type Epg struct {
 	Games           []Game `xml:"game"`
 }
 
+// EpgFor returns a pointer to the Epg for the given day.
+// The Epg is how the API finds the game directory for a game on a given day.
 func EpgFor(date string) *Epg {
 	var epg Epg
 	year := s.Split(date, "-")[0]
 	cachedFilePath := BaseCachePath() + "/" + year + "/"
-	cachedFileName := EpgCacheFileName(date)
+	cachedFileName := epgCacheFileName(date)
 
 	if _, err := os.Stat(cachedFilePath + cachedFileName); os.IsNotExist(err) {
 		log.Println("Fetching epg for " + date + " from MLB")
 
-		epgResp, err := http.Get(EpgURL(date))
+		epgResp, err := http.Get(epgURL(date))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -37,7 +41,7 @@ func EpgFor(date string) *Epg {
 			log.Fatal(err)
 		}
 		xml.Unmarshal(epgBody, &epg)
-		CacheEpgResponse(cachedFilePath, cachedFileName, epgBody)
+		cacheEpgResponse(cachedFilePath, cachedFileName, epgBody)
 	} else {
 		body, _ := ioutil.ReadFile(cachedFilePath + cachedFileName)
 		xml.Unmarshal(body, &epg)
@@ -46,6 +50,8 @@ func EpgFor(date string) *Epg {
 	return &epg
 }
 
+// GameForTeam will find the game for the given team based on the state of the Epg.
+// Does not yet support doubleheaders, for which it might need to return a collection of games.
 func (epg *Epg) GameForTeam(teamCode string) (*Game, error) {
 	for _, game := range epg.Games {
 		if game.GameType == "R" && (game.HomeCode == teamCode || game.AwayCode == teamCode) {
@@ -55,18 +61,18 @@ func (epg *Epg) GameForTeam(teamCode string) (*Game, error) {
 	return &Game{}, fmt.Errorf("[%s] doesn't have a game on [%s]", teamCode, epg.Date)
 }
 
-func EpgURL(date string) string {
+func epgURL(date string) string {
 	var buffer bytes.Buffer
 	buffer.WriteString(dateURL(date))
 	buffer.WriteString("/epg.xml")
 	return buffer.String()
 }
 
-func EpgCacheFileName(date string) string {
+func epgCacheFileName(date string) string {
 	return date + "-" + "epg.xml"
 }
 
-func CacheEpgResponse(path string, filename string, body []byte) {
+func cacheEpgResponse(path string, filename string, body []byte) {
 	os.MkdirAll(path, (os.FileMode)(0775))
 	f, err := os.Create(path + filename)
 	f.Write(body)
