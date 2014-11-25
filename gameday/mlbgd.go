@@ -17,7 +17,7 @@ func main() {
 
 	game, _ := gamedayapi.GameFor(teamCode, date)
 	log.Println(game.GameDataDirectory)
-	log.Println(game.BoxScore().GameID)
+	log.Println(game.Boxscore().GameID)
 	log.Println(game.AllInnings().Innings[0].Top.AtBats[0].Pitches[0].Des)
 
 //  Uncommenting these will execute batch fetch operations. These will be moving to their own commands at some point.

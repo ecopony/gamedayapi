@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+// OpeningAndFinalDatesForYear will inspect the schedule for the year and return dates for opening day and the final
+// day of the season
 func OpeningAndFinalDatesForYear(year int) (time.Time, time.Time) { // return an error
 	var openingDay, finalDay time.Time
 	f, err := os.Open("schedules/" + strconv.Itoa(year) + "SKED.TXT")
@@ -35,7 +37,7 @@ func OpeningAndFinalDatesForYear(year int) (time.Time, time.Time) { // return an
 
 }
 
-// line from the retrosheet schedule files looks like:
+// Parses a line from the Retrosheet schedule files. Lines look like:
 // "20110331","0","Thu","MIL","NL",1,"CIN","NL",1,"d","",""
 func dateFromScheduleLine(line string) time.Time {
 	year, _ := strconv.Atoi(line[1:5])

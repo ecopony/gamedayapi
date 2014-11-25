@@ -22,6 +22,7 @@ type Game struct {
 	AwayTime          string `xml:"away_time,attr"`
 	AwayTimezone      string `xml:"away_time_zone,attr"`
 	AwayWin           string `xml:"away_win,attr"`
+	CalendarEventID   string `xml:"calendar_event_id,attr"`
 	HomeAMPM          string `xml:"home_ampm,attr"`
 	HomeCode          string `xml:"home_code,attr"`
 	HomeLoss          string `xml:"home_loss,attr"`
@@ -35,13 +36,16 @@ type Game struct {
 	GameDataDirectory string `xml:"game_data_directory,attr"`
 	GamePk            string `xml:"game_pk,attr"`
 	GameType          string `xml:"game_type,attr"`
+	TimeDate          string `xml:"time_date,attr"`
 	Timezone          string `xml:"time_zone,attr"`
 	Venue             string `xml:"venue,attr"`
 
-	boxScore   BoxScore
+	boxscore   Boxscore
 	allInnings AllInnings
 }
 
+// GameFor will return a pointer to a game instance for the team code and date provided.
+// This is the place to start for interacting with a game.
 func GameFor(teamCode string, date string) (*Game, error) {
 	epg := EpgFor(date)
 	game, err := epg.GameForTeam(teamCode)
@@ -51,7 +55,7 @@ func GameFor(teamCode string, date string) (*Game, error) {
 	return game, nil
 }
 
-// AllInnings fetches the inning/innings_all.xml file from gameday servers and hydrates all the structs beneath, all the
+// AllInnings fetches the inning/innings_all.xml file from gameday servers and fills in all the structs beneath, all the
 // way down to the pitches
 func (game *Game) AllInnings() *AllInnings {
 	if len(game.allInnings.AtBat) == 0 {
@@ -60,11 +64,12 @@ func (game *Game) AllInnings() *AllInnings {
 	return &game.allInnings
 }
 
-func (game *Game) BoxScore() *BoxScore {
-	if len(game.boxScore.GameID) == 0 {
-		game.load("/boxscore.xml", &game.boxScore)
+// Boxscore fetches the boxscore.xml file from the gameday servers and fills in all the structs beneath.
+func (game *Game) Boxscore() *Boxscore {
+	if len(game.boxscore.GameID) == 0 {
+		game.load("/boxscore.xml", &game.boxscore)
 	}
-	return &game.boxScore
+	return &game.boxscore
 }
 
 //func (game *Game) GameEvents() *GameEvents {}
