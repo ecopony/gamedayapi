@@ -51,13 +51,6 @@ func GameFor(teamCode string, date string) (*Game, error) {
 	return game, nil
 }
 
-func (game *Game) BoxScore() *BoxScore {
-	if len(game.boxScore.GameID) == 0 {
-		game.load("/boxscore.xml", &game.boxScore)
-	}
-	return &game.boxScore
-}
-
 // AllInnings fetches the inning/innings_all.xml file from gameday servers and hydrates all the structs beneath, all the
 // way down to the pitches
 func (game *Game) AllInnings() *AllInnings {
@@ -66,6 +59,19 @@ func (game *Game) AllInnings() *AllInnings {
 	}
 	return &game.allInnings
 }
+
+func (game *Game) BoxScore() *BoxScore {
+	if len(game.boxScore.GameID) == 0 {
+		game.load("/boxscore.xml", &game.boxScore)
+	}
+	return &game.boxScore
+}
+
+//func (game *Game) GameEvents() *GameEvents {}
+
+//func (game *Game) HitChart() *HitChart {}
+
+//func (game *Game) InningScores() *InningScores {}
 
 func (game Game) load(fileName string, val interface{}) {
 	filePath := game.GameDataDirectory + fileName
