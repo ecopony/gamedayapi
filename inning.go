@@ -13,11 +13,13 @@ type Inning struct {
 	Bottom Bottom `xml:"bottom"`
 }
 
+// Top corresponds to the top half of an inning.
 type Top struct {
 	XMLName xml.Name `xml:"top"`
 	AtBats  []AtBat  `xml:"atbat"`
 }
 
+// Bottom corresponds to the bottom half of an inning.
 type Bottom struct {
 	XMLName xml.Name `xml:"bottom"`
 	AtBats  []AtBat  `xml:"atbat"`

@@ -9,12 +9,15 @@ import (
 	s "strings"
 )
 
+// Game is the top-level abstraction, the starting point for clients.
+// A game is obtained using the GameFor function.
+// From a game, clients can navigate to all data: Innings, Boxscore, etc.
 type Game struct {
 	AwayAPMP          string `xml:"away_ampm,attr"`
 	AwayCode          string `xml:"away_code,attr"`
 	AwayLoss          string `xml:"away_loss,attr"`
 	AwayTeamCity      string `xml:"away_team_city,attr"`
-	AwayTeamId        string `xml:"away_team_id,attr"`
+	AwayTeamID        string `xml:"away_team_id,attr"`
 	AwayTeamName      string `xml:"away_team_name,attr"`
 	AwayTime          string `xml:"away_time,attr"`
 	AwayTimezone      string `xml:"away_time_zone,attr"`
@@ -23,17 +26,17 @@ type Game struct {
 	HomeCode          string `xml:"home_code,attr"`
 	HomeLoss          string `xml:"home_loss,attr"`
 	HomeTeamCity      string `xml:"home_team_city,attr"`
-	HomeTeamId        string `xml:"home_team_id,attr"`
+	HomeTeamID        string `xml:"home_team_id,attr"`
 	HomeTeamName      string `xml:"home_team_name,attr"`
 	HomeTime          string `xml:"home_time,attr"`
 	HomeTimezone      string `xml:"home_time_zone,attr"`
 	HomeWin           string `xml:"home_win,attr"`
-	Id                string `xml:"id,attr"`
+	ID                string `xml:"id,attr"`
+	GameDataDirectory string `xml:"game_data_directory,attr"`
 	GamePk            string `xml:"game_pk,attr"`
 	GameType          string `xml:"game_type,attr"`
 	Timezone          string `xml:"time_zone,attr"`
 	Venue             string `xml:"venue,attr"`
-	GameDataDirectory string `xml:"game_data_directory,attr"`
 
 	boxScore   BoxScore
 	allInnings AllInnings
@@ -49,12 +52,14 @@ func GameFor(teamCode string, date string) (*Game, error) {
 }
 
 func (game *Game) BoxScore() *BoxScore {
-	if len(game.boxScore.GameId) == 0 {
+	if len(game.boxScore.GameID) == 0 {
 		game.load("/boxscore.xml", &game.boxScore)
 	}
 	return &game.boxScore
 }
 
+// AllInnings fetches the inning/innings_all.xml file from gameday servers and hydrates all the structs beneath, all the
+// way down to the pitches
 func (game *Game) AllInnings() *AllInnings {
 	if len(game.allInnings.AtBat) == 0 {
 		game.load("/inning/inning_all.xml", &game.allInnings)

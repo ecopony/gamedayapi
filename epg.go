@@ -27,7 +27,7 @@ func EpgFor(date string) *Epg {
 	if _, err := os.Stat(cachedFilePath + cachedFileName); os.IsNotExist(err) {
 		log.Println("Fetching epg for " + date + " from MLB")
 
-		epgResp, err := http.Get(EpgUrl(date))
+		epgResp, err := http.Get(EpgURL(date))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -55,9 +55,9 @@ func (epg *Epg) GameForTeam(teamCode string) (*Game, error) {
 	return &Game{}, fmt.Errorf("[%s] doesn't have a game on [%s]", teamCode, epg.Date)
 }
 
-func EpgUrl(date string) string {
+func EpgURL(date string) string {
 	var buffer bytes.Buffer
-	buffer.WriteString(dateUrl(date))
+	buffer.WriteString(dateURL(date))
 	buffer.WriteString("/epg.xml")
 	return buffer.String()
 }

@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+// FetchByYearAndTeam takes a year and a team code and will roll through all the games for that season.
+// The fetchFunc will be passed each game for the year so clients can pull data, compute stats, etc.
 func FetchByYearAndTeam(year int, teamCode string, fetchFunc FetchFunc) {
 	log.Println("Batchin it in " + strconv.Itoa(year) + " for " + teamCode)
 	openingDay, finalDay := OpeningAndFinalDatesForYear(year)

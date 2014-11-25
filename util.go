@@ -9,7 +9,7 @@ import (
 
 const (
 	GamedayHostname = "http://gd2.mlb.com"
-	GamedayBaseUrl  = "http://gd2.mlb.com/components/game/mlb"
+	GamedayBaseURL  = "http://gd2.mlb.com/components/game/mlb"
 )
 
 func datePath(date string) string {
@@ -25,9 +25,9 @@ func datePath(date string) string {
 	return buffer.String()
 }
 
-func dateUrl(date string) string {
+func dateURL(date string) string {
 	var buffer bytes.Buffer
-	buffer.WriteString(GamedayBaseUrl)
+	buffer.WriteString(GamedayBaseURL)
 	buffer.WriteString(datePath(date))
 	return buffer.String()
 }
