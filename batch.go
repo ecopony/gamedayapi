@@ -3,8 +3,8 @@ package gamedayapi
 import (
 	"log"
 	"strconv"
-	"time"
 	"sync"
+	"time"
 )
 
 // FetchByYearAndTeam takes a year and a team code and will roll through all the games for that season.
@@ -29,7 +29,7 @@ func FetchByYearAndTeam(year int, teamCode string, fetchFunc FetchFunc) {
 	}
 }
 
-// FetchByYearAndTeam takes a collection of years and a team code and will concurrently roll through all the games for
+// FetchByYearsAndTeam takes a collection of years and a team code and will concurrently roll through all the games for
 // the seasons.
 // The fetchFunc will be passed each game for the year so clients can pull data, compute stats, etc.
 func FetchByYearsAndTeam(years []int, teamCode string, fetchFunc FetchFunc) {
