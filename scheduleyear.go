@@ -1,12 +1,12 @@
 package gamedayapi
 
 import (
-	"time"
-	"log"
-	"io"
 	"bufio"
-	"strconv"
+	"io"
+	"log"
 	"os"
+	"strconv"
+	"time"
 )
 
 func OpeningAndFinalDatesForYear(year int) (time.Time, time.Time) { // return an error
@@ -38,8 +38,8 @@ func OpeningAndFinalDatesForYear(year int) (time.Time, time.Time) { // return an
 // line from the retrosheet schedule files looks like:
 // "20110331","0","Thu","MIL","NL",1,"CIN","NL",1,"d","",""
 func dateFromScheduleLine(line string) time.Time {
-	year, _  := strconv.Atoi(line[1:5])
-	month, _  := strconv.Atoi(line[5:7])
-	day, _  := strconv.Atoi(line[7:9])
+	year, _ := strconv.Atoi(line[1:5])
+	month, _ := strconv.Atoi(line[5:7])
+	day, _ := strconv.Atoi(line[7:9])
 	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 }

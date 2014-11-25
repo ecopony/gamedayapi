@@ -1,16 +1,15 @@
 package gamedayapi
 
 import (
-	"os/user"
-	"log"
 	"bytes"
+	"log"
+	"os/user"
 	s "strings"
 )
 
 const (
 	GamedayHostname = "http://gd2.mlb.com"
-	GamedayBaseUrl = "http://gd2.mlb.com/components/game/mlb"
-
+	GamedayBaseUrl  = "http://gd2.mlb.com/components/game/mlb"
 )
 
 func datePath(date string) string {
@@ -36,7 +35,7 @@ func dateUrl(date string) string {
 func homeDir() string {
 	usr, err := user.Current()
 	if err != nil {
-		log.Fatal( err )
+		log.Fatal(err)
 	}
 	return usr.HomeDir
 }

@@ -2,8 +2,8 @@ package gamedayapi
 
 import (
 	"log"
-	"time"
 	"strconv"
+	"time"
 )
 
 func FetchByYearAndTeam(year int, teamCode string, fetchFunc FetchFunc) {
@@ -19,7 +19,7 @@ func FetchByYearAndTeam(year int, teamCode string, fetchFunc FetchFunc) {
 			fetchFunc(game)
 		}
 
-		currentDay = currentDay.Add(time.Hour*24)
+		currentDay = currentDay.Add(time.Hour * 24)
 		if currentDay.After(finalDay) {
 			break
 		}

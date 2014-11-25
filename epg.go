@@ -1,21 +1,21 @@
 package gamedayapi
 
 import (
-	"log"
 	"bytes"
-	"io/ioutil"
-	"net/http"
 	"encoding/xml"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"os"
 	s "strings"
-	"fmt"
 )
 
 type Epg struct {
-	Date string `xml:"date,attr"`
-	LastModified string `xml:"last_modified,attr"`
+	Date            string `xml:"date,attr"`
+	LastModified    string `xml:"last_modified,attr"`
 	DisplayTimeZone string `xml:"display_time_zone,attr"`
-	Games []Game `xml:"game"`
+	Games           []Game `xml:"game"`
 }
 
 func EpgFor(date string) *Epg {
@@ -48,7 +48,7 @@ func EpgFor(date string) *Epg {
 
 func (epg *Epg) GameForTeam(teamCode string) (*Game, error) {
 	for _, game := range epg.Games {
-		if (game.GameType == "R" && (game.HomeCode == teamCode || game.AwayCode == teamCode)) {
+		if game.GameType == "R" && (game.HomeCode == teamCode || game.AwayCode == teamCode) {
 			return &game, nil
 		}
 	}
@@ -73,4 +73,3 @@ func CacheEpgResponse(path string, filename string, body []byte) {
 	check(err)
 	defer f.Close()
 }
-
