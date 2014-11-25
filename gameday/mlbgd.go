@@ -15,7 +15,7 @@ func main() {
 	teamCode := args[0]
 	date := args[1]
 
-	game := gamedayapi.GameFor(teamCode, date)
+	game, _ := gamedayapi.GameFor(teamCode, date)
 	log.Println(game.GameDataDirectory)
 	log.Println(game.BoxScore().GameId)
 	log.Println(game.AllInnings().Innings[0].Top.AtBats[0].Pitches[0].Des)

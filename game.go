@@ -30,6 +30,7 @@ type Game struct {
 	HomeWin				string		`xml:"home_win,attr"`
 	Id					string		`xml:"id,attr"`
 	GamePk				string		`xml:"game_pk,attr"`
+	GameType			string		`xml:"game_type,attr"`
 	Timezone			string		`xml:"time_zone,attr"`
 	Venue				string		`xml:"venue,attr"`
 	GameDataDirectory	string		`xml:"game_data_directory,attr"`
@@ -38,10 +39,13 @@ type Game struct {
 	allInnings AllInnings
 }
 
-func GameFor(teamCode string, date string) *Game {
+func GameFor(teamCode string, date string) (*Game, error) {
 	epg := EpgFor(date)
-	game := epg.GameForTeam(teamCode)
-	return game
+	game, err := epg.GameForTeam(teamCode)
+	if err != nil {
+		return &Game{}, err
+	}
+	return game, nil
 }
 
 func (game *Game) BoxScore() *BoxScore {

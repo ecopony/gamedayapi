@@ -8,10 +8,11 @@ import (
 	"encoding/xml"
 	"os"
 	s "strings"
+	"fmt"
 )
 
 type Epg struct {
-	Date string `xml:"id,attr"`
+	Date string `xml:"date,attr"`
 	LastModified string `xml:"last_modified,attr"`
 	DisplayTimeZone string `xml:"display_time_zone,attr"`
 	Games []Game `xml:"game"`
@@ -45,13 +46,13 @@ func EpgFor(date string) *Epg {
 	return &epg
 }
 
-func (epg *Epg) GameForTeam(teamCode string) *Game {
+func (epg *Epg) GameForTeam(teamCode string) (*Game, error) {
 	for _, game := range epg.Games {
-		if game.HomeCode == teamCode || game.AwayCode == teamCode {
-			return &game
+		if (game.GameType == "R" && (game.HomeCode == teamCode || game.AwayCode == teamCode)) {
+			return &game, nil
 		}
 	}
-	return &Game{} // this should be an error
+	return &Game{}, fmt.Errorf("[%s] doesn't have a game on [%s]", teamCode, epg.Date)
 }
 
 func EpgUrl(date string) string {
