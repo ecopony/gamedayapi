@@ -16,7 +16,7 @@ func FetchByYearAndTeam(year int, teamCode string, fetchFunc FetchFunc) {
 		if err != nil {
 			log.Println(err)
 		} else {
-			log.Println(game.GameDataDirectory)
+			fetchFunc(game)
 		}
 
 		currentDay = currentDay.Add(time.Hour*24)

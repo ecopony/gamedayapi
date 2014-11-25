@@ -20,5 +20,5 @@ func main() {
 	log.Println(game.BoxScore().GameId)
 	log.Println(game.AllInnings().Innings[0].Top.AtBats[0].Pitches[0].Des)
 
-//	gamedayapi.FetchByYearAndTeam(2014, "sea", func(game *gamedayapi.Game) { log.Println("Operate on the game")})
+//	gamedayapi.FetchByYearAndTeam(2014, "sea", func(game *gamedayapi.Game) { log.Println("Do something with game " + game.Id)})
 }
