@@ -17,8 +17,10 @@ func main() {
 
 	game, _ := gamedayapi.GameFor(teamCode, date)
 	log.Println(game.GameDataDirectory)
-	log.Println(game.BoxScore().GameId)
+	log.Println(game.BoxScore().GameID)
 	log.Println(game.AllInnings().Innings[0].Top.AtBats[0].Pitches[0].Des)
 
+//  Uncommenting these will execute batch fetch operations. These will be moving to their own commands at some point.
 //	gamedayapi.FetchByYearAndTeam(2014, "sea", func(game *gamedayapi.Game) { log.Println("Do something with game " + game.ID)})
+//	gamedayapi.FetchByYearsAndTeam([]int{2013, 2014}, "sea", func(game *gamedayapi.Game) { log.Println("Do something with game " + game.ID)})
 }

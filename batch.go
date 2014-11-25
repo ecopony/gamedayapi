@@ -4,6 +4,7 @@ import (
 	"log"
 	"strconv"
 	"time"
+	"sync"
 )
 
 // FetchByYearAndTeam takes a year and a team code and will roll through all the games for that season.
@@ -28,4 +29,20 @@ func FetchByYearAndTeam(year int, teamCode string, fetchFunc FetchFunc) {
 	}
 }
 
+// FetchByYearAndTeam takes a collection of years and a team code and will concurrently roll through all the games for
+// the seasons.
+// The fetchFunc will be passed each game for the year so clients can pull data, compute stats, etc.
+func FetchByYearsAndTeam(years []int, teamCode string, fetchFunc FetchFunc) {
+	var wg sync.WaitGroup
+	for _, year := range years {
+		wg.Add(1)
+		go func(year int) {
+			defer wg.Done()
+			FetchByYearAndTeam(year, teamCode, fetchFunc)
+		}(year)
+	}
+	wg.Wait()
+}
+
+// FetchFunc is a function passed into fetchers in order to operate on the games fetched.
 type FetchFunc func(game *Game)
