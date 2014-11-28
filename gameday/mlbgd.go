@@ -22,5 +22,22 @@ func main() {
 
 //  Uncommenting these will execute batch fetch operations. These will be moving to their own commands at some point.
 //	gamedayapi.FetchByYearAndTeam(2014, "sea", func(game *gamedayapi.Game) { log.Println("Do something with game " + game.ID)})
-//	gamedayapi.FetchByYearsAndTeam([]int{2013, 2014}, "sea", func(game *gamedayapi.Game) { log.Println("Do something with game " + game.ID)})
+//	gamedayapi.FetchByYearsAndTeam([]int{2013, 2014}, "sea", ExampleOfNavigatingAllPitches)
+}
+
+func ExampleOfNavigatingAllPitches(game *gamedayapi.Game) {
+	log.Println(">>>> " + game.ID + " <<<<")
+	innings := game.AllInnings().Innings
+
+	for _, inning := range innings {
+		log.Println("   > " + inning.Num)
+
+		for _, atBat := range inning.AtBats() {
+			log.Println("      > " + atBat.Num)
+
+			for _, pitch := range atBat.Pitches {
+				log.Println("          > " + pitch.Des)
+			}
+		}
+	}
 }

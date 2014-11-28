@@ -1,7 +1,10 @@
 package gamedayapi
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+)
 
+// Inning represents the inning structure in the innings/innings_all.xml file.
 type Inning struct {
 	XMLName  xml.Name `xml:"inning"`
 	AwayTeam string   `xml:"away_team,attr"`
@@ -23,4 +26,10 @@ type Top struct {
 type Bottom struct {
 	XMLName xml.Name `xml:"bottom"`
 	AtBats  []AtBat  `xml:"atbat"`
+}
+
+// AtBats returns all at bats from the inning level.
+// A convenience method to save clients from having to deal with the Top and Bottom halves.
+func (inning *Inning) AtBats() []AtBat {
+	return append(inning.Top.AtBats, inning.Bottom.AtBats...)
 }
