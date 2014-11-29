@@ -12,7 +12,7 @@ const (
 	GamedayHostname = "http://gd2.mlb.com"
 
 	// GamedayBaseURL is the base URL of the MLB gameday files
-	GamedayBaseURL  = "http://gd2.mlb.com/components/game/mlb"
+	GamedayBaseURL = "http://gd2.mlb.com/components/game/mlb"
 )
 
 func datePath(date string) string {

@@ -40,8 +40,9 @@ type Game struct {
 	Timezone          string `xml:"time_zone,attr"`
 	Venue             string `xml:"venue,attr"`
 
-	boxscore   Boxscore
 	allInnings AllInnings
+	boxscore   Boxscore
+	hitChart   HitChart
 }
 
 // GameFor will return a pointer to a game instance for the team code and date provided.
@@ -72,9 +73,13 @@ func (game *Game) Boxscore() *Boxscore {
 	return &game.boxscore
 }
 
-//func (game *Game) GameEvents() *GameEvents {}
-
-//func (game *Game) HitChart() *HitChart {}
+// HitChart fetches the inning/inning_hit.xml file from gameday servers
+func (game *Game) HitChart() *HitChart {
+	if len(game.hitChart.Hips) == 0 {
+		game.load("/inning/inning_hit.xml", &game.hitChart)
+	}
+	return &game.hitChart
+}
 
 //func (game *Game) InningScores() *InningScores {}
 
