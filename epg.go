@@ -25,7 +25,7 @@ type Epg struct {
 func EpgFor(date string) *Epg {
 	var epg Epg
 	year := s.Split(date, "-")[0]
-	cachedFilePath := BaseCachePath() + "/" + year + "/"
+	cachedFilePath := baseCachePath() + "/" + year + "/"
 	cachedFileName := epgCacheFileName(date)
 
 	if _, err := os.Stat(cachedFilePath + cachedFileName); os.IsNotExist(err) {

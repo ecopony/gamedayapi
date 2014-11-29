@@ -1,8 +1,8 @@
 package gamedayapi
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func GameForTest() *Game {

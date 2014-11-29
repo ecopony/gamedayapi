@@ -8,7 +8,10 @@ import (
 )
 
 const (
+	// GamedayHostname is the hostname of the MLB gameday site
 	GamedayHostname = "http://gd2.mlb.com"
+
+	// GamedayBaseURL is the base URL of the MLB gameday files
 	GamedayBaseURL  = "http://gd2.mlb.com/components/game/mlb"
 )
 
@@ -40,7 +43,7 @@ func homeDir() string {
 	return usr.HomeDir
 }
 
-func BaseCachePath() string {
+func baseCachePath() string {
 	return homeDir() + "/go-gameday-cache"
 }
 

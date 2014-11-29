@@ -2,6 +2,7 @@ package gamedayapi
 
 import "encoding/xml"
 
+// Pitch represents the pitch fragments in inning/innings_all.xml
 type Pitch struct {
 	XMLName        xml.Name `xml:"pitch"`
 	ID             string   `xml:"id,attr"`

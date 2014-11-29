@@ -55,8 +55,8 @@ func GameFor(teamCode string, date string) (*Game, error) {
 	return game, nil
 }
 
-// AllInnings fetches the inning/innings_all.xml file from gameday servers and fills in all the structs beneath, all the
-// way down to the pitches
+// AllInnings fetches the inning/innings_all.xml file from gameday servers and fills in all the
+// structs beneath, all the way down to the pitches.
 func (game *Game) AllInnings() *AllInnings {
 	if len(game.allInnings.AtBat) == 0 {
 		game.load("/inning/inning_all.xml", &game.allInnings)
@@ -80,7 +80,7 @@ func (game *Game) Boxscore() *Boxscore {
 
 func (game Game) load(fileName string, val interface{}) {
 	filePath := game.GameDataDirectory + fileName
-	localFilePath := BaseCachePath() + filePath
+	localFilePath := baseCachePath() + filePath
 	if _, err := os.Stat(localFilePath); os.IsNotExist(err) {
 		log.Println("Cache miss on " + localFilePath)
 		fetchAndCache(filePath, val)
@@ -107,7 +107,7 @@ func fetchAndCache(filePath string, val interface{}) {
 }
 
 func cacheFile(filePath string, body []byte) {
-	localCachePath := BaseCachePath() + filePath[0:s.LastIndex(filePath, "/")]
+	localCachePath := baseCachePath() + filePath[0:s.LastIndex(filePath, "/")]
 	os.MkdirAll(localCachePath, (os.FileMode)(0775))
 	f, err := os.Create(localCachePath + filePath[s.LastIndex(filePath, "/"):])
 	f.Write(body)
