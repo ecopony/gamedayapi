@@ -53,6 +53,7 @@ type Game struct {
 
 // GameFor will return a pointer to a game instance for the team code and date provided.
 // This is the place to start for interacting with a game.
+// Does not account for doubleheaders. Use GamesFor if doubleheader support is needed.
 func GameFor(teamCode string, date string) (*Game, error) {
 	epg := EpgFor(date)
 	game, err := epg.GameForTeam(teamCode)
@@ -60,6 +61,17 @@ func GameFor(teamCode string, date string) (*Game, error) {
 		return &Game{}, err
 	}
 	return game, nil
+}
+
+// GamesFor will return a collection of pointers to games for the team code and date provided.
+// Accounts for doubleheaders. In most cases, the collection will only have one game in it.
+func GamesFor(teamCode string, date string) ([]*Game, error) {
+	epg := EpgFor(date)
+	games, err := epg.GamesForTeam(teamCode)
+	if err != nil {
+		return games, err
+	}
+	return games, nil
 }
 
 // AllInnings fetches the inning/innings_all.xml file from gameday servers and fills in all the

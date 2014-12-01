@@ -15,11 +15,13 @@ func FetchByYearAndTeam(year int, teamCode string, fetchFunc FetchFunc) {
 	currentDay := openingDay
 
 	for {
-		game, err := GameFor(teamCode, currentDay.Format("2006-01-02"))
+		games, err := GamesFor(teamCode, currentDay.Format("2006-01-02"))
 		if err != nil {
 			log.Println(err)
 		} else {
-			fetchFunc(game)
+			for i := 0; i < len(games); i++ {
+				fetchFunc(games[i])
+			}
 		}
 
 		currentDay = currentDay.Add(time.Hour * 24)

@@ -50,15 +50,31 @@ func EpgFor(date string) *Epg {
 	return &epg
 }
 
-// GameForTeam will find the game for the given team based on the state of the Epg.
-// Does not yet support doubleheaders, for which it might need to return a collection of games.
+// GameForTeam will return the first game for the given team based on the state of the Epg.
+// Does not support doubleheaders. If support for doubleheaders is needed, use GamesForTeam.
 func (epg *Epg) GameForTeam(teamCode string) (*Game, error) {
 	for _, game := range epg.Games {
-		if game.GameType == "R" && (game.HomeCode == teamCode || game.AwayCode == teamCode) {
+		if isGameForTeam(&game, teamCode) {
 			return &game, nil
 		}
 	}
 	return &Game{}, fmt.Errorf("[%s] doesn't have a game on [%s]", teamCode, epg.Date)
+}
+
+// GamesForTeam will return a collection of the team's games for the day. Supports days where
+// the team played in a doubleheader.
+func (epg *Epg) GamesForTeam(teamCode string) ([]*Game, error) {
+	var games []*Game
+	for i := 0; i < len(epg.Games); i++ {
+		game := &epg.Games[i]
+		if isGameForTeam(game, teamCode) {
+			games = append(games, game)
+		}
+	}
+	if len(games) == 0 {
+		return games, fmt.Errorf("[%s] doesn't have a game on [%s]", teamCode, epg.Date)
+	}
+	return games, nil
 }
 
 func epgURL(date string) string {
@@ -78,4 +94,8 @@ func cacheEpgResponse(path string, filename string, body []byte) {
 	f.Write(body)
 	check(err)
 	defer f.Close()
+}
+
+func isGameForTeam(game *Game, teamCode string) bool {
+	return game.GameType == "R" && (game.HomeCode == teamCode || game.AwayCode == teamCode)
 }

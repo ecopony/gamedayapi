@@ -3,6 +3,7 @@ package gamedayapi
 import (
 	"reflect"
 	"testing"
+	//	"log"
 )
 
 func GameForTest() *Game {
@@ -26,4 +27,11 @@ func TestAtBatsOnInning(t *testing.T) {
 	inning := game.AllInnings().Innings[0]
 	atBatTotal := len(inning.Top.AtBats) + len(inning.Bottom.AtBats)
 	assertEquals(t, len(inning.AtBats()), atBatTotal)
+}
+
+func TestDoubleheaders(t *testing.T) {
+	games, _ := GamesFor("sea", "2014-05-07")
+	assertEquals(t, len(games), 2)
+	assertEquals(t, games[0].Gameday, "2014_05_07_seamlb_oakmlb_1")
+	assertEquals(t, games[1].Gameday, "2014_05_07_seamlb_oakmlb_2")
 }
