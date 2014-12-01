@@ -35,6 +35,7 @@ type Game struct {
 	HomeTimezone    string `xml:"home_time_zone,attr"`
 	HomeWin         string `xml:"home_win,attr"`
 	ID              string `xml:"id,attr"`
+	Gameday         string `xml:"gameday,attr"`
 	GamePk          string `xml:"game_pk,attr"`
 	GameType        string `xml:"game_type,attr"`
 	TimeDate        string `xml:"time_date,attr"`
@@ -107,9 +108,8 @@ func (game Game) FetchableDataDirectory() string {
 	idPieces := s.Split(game.ID, "/")
 	var buffer bytes.Buffer
 	buffer.WriteString(GamedayBasePath)
-	buffer.WriteString(fmt.Sprintf("/year_%s/month_%s/day_%s/", idPieces[0], idPieces[1], idPieces[2]))
-	buffer.WriteString(fmt.Sprintf("gid_%s_%s_%s_", idPieces[0], idPieces[1], idPieces[2]))
-	buffer.WriteString(s.Replace(idPieces[3], "-", "_", 2))
+	buffer.WriteString(fmt.Sprintf("/year_%s/month_%s/day_%s/gid_", idPieces[0], idPieces[1], idPieces[2]))
+	buffer.WriteString(game.Gameday)
 	return buffer.String()
 }
 
