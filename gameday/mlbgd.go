@@ -9,7 +9,7 @@ import (
 func main() {
 	args := os.Args[1:]
 	if (len(args) != 2) {
-		log.Fatal("Usage: gameday teamCode date")
+		log.Fatal("Usage: mlbgd teamCode date")
 	}
 
 	teamCode := args[0]
@@ -22,8 +22,8 @@ func main() {
 	log.Println(game.HitChart().Hips[0].X)
 
 //  Uncommenting these will execute batch fetch operations. These will be moving to their own commands at some point.
-//	gamedayapi.FetchByYearAndTeam(2013, "sea", ExampleOfNavigatingAllPitches)
-//	gamedayapi.FetchByYearsAndTeam([]int{2013, 2014}, "sea", ExampleOfNavigatingAllPitches)
+//	gamedayapi.FetchByYearAndTeam(2014, "sea", ExampleOfPullingDownAllFilesForGame)
+//	gamedayapi.FetchByYearsAndTeam([]int{2012, 2013, 2014}, "sea", ExampleOfNavigatingAllPitches)
 }
 
 func ExampleOfNavigatingAllPitches(game *gamedayapi.Game) {
@@ -32,8 +32,11 @@ func ExampleOfNavigatingAllPitches(game *gamedayapi.Game) {
 		for _, atBat := range inning.AtBats() {
 			for _, pitch := range atBat.Pitches {
 				log.Println("> " + pitch.Des)
-
 			}
 		}
 	}
+}
+
+func ExampleOfPullingDownAllFilesForGame(game *gamedayapi.Game) {
+	game.EagerLoad()
 }

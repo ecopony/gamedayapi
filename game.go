@@ -101,6 +101,14 @@ func (game *Game) HitChart() *HitChart {
 
 //func (game *Game) InningScores() *InningScores {}
 
+// EagerLoad will eagerly load all of the files that the library pulls from the MLB gameday servers.
+// Otherwise, files are lazily loaded as clients interact with the API.
+func (game *Game) EagerLoad() {
+	game.AllInnings()
+	game.Boxscore()
+	game.HitChart()
+}
+
 func (game Game) load(fileName string, val interface{}) {
 	filePath := game.FetchableDataDirectory() + fileName
 	localFilePath := baseCachePath() + filePath
