@@ -1,14 +1,14 @@
 package gamedayapi
 
 import (
-	"bytes"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	s "strings"
+	"time"
+	"strconv"
 )
 
 // Epg represents the epg.xml file that is in the root of each day's directory.
@@ -22,14 +22,13 @@ type Epg struct {
 
 // EpgFor returns a pointer to the Epg for the given day.
 // The Epg is how the API finds the game directory for a game on a given day.
-func EpgFor(date string) *Epg {
+func EpgFor(date time.Time) *Epg {
 	var epg Epg
-	year := s.Split(date, "-")[0]
-	cachedFilePath := baseCachePath() + "/" + year + "/"
+	cachedFilePath := baseCachePath() + "/" + strconv.Itoa(date.Year()) + "/"
 	cachedFileName := epgCacheFileName(date)
 
 	if _, err := os.Stat(cachedFilePath + cachedFileName); os.IsNotExist(err) {
-		log.Println("Fetching epg for " + date + " from MLB")
+		log.Println("Fetching epg for " + date.Format("2006-01-02") + " from MLB")
 
 		epgResp, err := http.Get(epgURL(date))
 		if err != nil {
@@ -77,15 +76,12 @@ func (epg *Epg) GamesForTeam(teamCode string) ([]*Game, error) {
 	return games, nil
 }
 
-func epgURL(date string) string {
-	var buffer bytes.Buffer
-	buffer.WriteString(dateURL(date))
-	buffer.WriteString("/epg.xml")
-	return buffer.String()
+func epgURL(date time.Time) string {
+	return dateURL(date) + "/epg.xml"
 }
 
-func epgCacheFileName(date string) string {
-	return date + "-" + "epg.xml"
+func epgCacheFileName(date time.Time) string {
+	return date.Format("2006-01-02") + "-epg.xml"
 }
 
 func cacheEpgResponse(path string, filename string, body []byte) {

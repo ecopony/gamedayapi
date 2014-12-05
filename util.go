@@ -1,10 +1,10 @@
 package gamedayapi
 
 import (
-	"bytes"
 	"log"
 	"os/user"
-	s "strings"
+	"time"
+	"fmt"
 )
 
 const (
@@ -18,24 +18,12 @@ const (
 	GamedayBasePath = "/components/game/mlb"
 )
 
-func datePath(date string) string {
-	// firx this to be date parsing, validating
-	datePieces := s.Split(date, "-")
-	var buffer bytes.Buffer
-	buffer.WriteString("/year_")
-	buffer.WriteString(datePieces[0])
-	buffer.WriteString("/month_")
-	buffer.WriteString(datePieces[1])
-	buffer.WriteString("/day_")
-	buffer.WriteString(datePieces[2])
-	return buffer.String()
+func datePath(date time.Time) string {
+	return fmt.Sprintf("/year_%02d/month_%02d/day_%02d", date.Year(), date.Month(), date.Day())
 }
 
-func dateURL(date string) string {
-	var buffer bytes.Buffer
-	buffer.WriteString(GamedayBaseURL)
-	buffer.WriteString(datePath(date))
-	return buffer.String()
+func dateURL(date time.Time) string {
+	return GamedayBaseURL + datePath(date)
 }
 
 func homeDir() string {
