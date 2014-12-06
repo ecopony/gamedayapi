@@ -26,8 +26,8 @@ func main() {
 	log.Println(game.HitChart().Hips[0].X)
 
 	//  Uncommenting these will execute batch fetch operations. These will be moving to their own commands at some point.
-	//	gamedayapi.FetchByYearAndTeam(2014, "sea", exampleOfPullingDownAllFilesForGame)
-	//	gamedayapi.FetchByYearsAndTeam([]int{2012, 2013, 2014}, "sea", exampleOfNavigatingAllPitches)
+//		gamedayapi.FetchByTeamAndYear("sea", 2014, exampleOfPullingDownAllFilesForGame)
+//		gamedayapi.FetchByTeamAndYears("sea", []int{2012, 2013, 2014}, exampleOfNavigatingAllPitches)
 }
 
 func exampleOfNavigatingAllPitches(game *gamedayapi.Game) {

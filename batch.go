@@ -7,9 +7,9 @@ import (
 	"time"
 )
 
-// FetchByYearAndTeam takes a year and a team code and will roll through all the games for that season.
+// FetchByTeamAndYear takes a year and a team code and will roll through all the games for that season.
 // The fetchFunc will be passed each game for the year so clients can pull data, compute stats, etc.
-func FetchByYearAndTeam(year int, teamCode string, fetchFunc FetchFunc) {
+func FetchByTeamAndYear(teamCode string, year int, fetchFunc FetchFunc) {
 	log.Println("Batchin it in " + strconv.Itoa(year) + " for " + teamCode)
 	openingDay, finalDay := OpeningAndFinalDatesForYear(year)
 	currentDay := openingDay
@@ -32,16 +32,16 @@ func FetchByYearAndTeam(year int, teamCode string, fetchFunc FetchFunc) {
 	}
 }
 
-// FetchByYearsAndTeam takes a collection of years and a team code and will concurrently roll through all the games for
+// FetchByTeamAndYears takes a collection of years and a team code and will concurrently roll through all the games for
 // the seasons.
 // The fetchFunc will be passed each game for the year so clients can pull data, compute stats, etc.
-func FetchByYearsAndTeam(years []int, teamCode string, fetchFunc FetchFunc) {
+func FetchByTeamAndYears(teamCode string, years []int, fetchFunc FetchFunc) {
 	var wg sync.WaitGroup
 	for _, year := range years {
 		wg.Add(1)
 		go func(year int) {
 			defer wg.Done()
-			FetchByYearAndTeam(year, teamCode, fetchFunc)
+			FetchByTeamAndYear(teamCode, year, fetchFunc)
 		}(year)
 	}
 	wg.Wait()
