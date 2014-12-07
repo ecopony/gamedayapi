@@ -2,9 +2,11 @@ package gamedayapi
 
 import (
 	"bufio"
+	"bytes"
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -13,7 +15,13 @@ import (
 // day of the season
 func OpeningAndFinalDatesForYear(year int) (time.Time, time.Time) { // return an error
 	var openingDay, finalDay time.Time
-	f, err := os.Open("schedules/" + strconv.Itoa(year) + "SKED.TXT")
+	absPath, _ := filepath.Abs("../gamedayapi/schedules")
+	var buffer bytes.Buffer
+	buffer.WriteString(absPath)
+	buffer.WriteString("/")
+	buffer.WriteString(strconv.Itoa(year))
+	buffer.WriteString("SKED.TXT")
+	f, err := os.Open(buffer.String())
 	if err != nil {
 		log.Fatal(err)
 	}
