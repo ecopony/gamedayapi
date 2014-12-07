@@ -39,6 +39,7 @@ type Game struct {
 	Gameday         string `xml:"gameday,attr"`
 	GamePk          string `xml:"game_pk,attr"`
 	GameType        string `xml:"game_type,attr"`
+	Status          string `xml:"status,attr"`
 	TimeDate        string `xml:"time_date,attr"`
 	Timezone        string `xml:"time_zone,attr"`
 	Venue           string `xml:"venue,attr"`
@@ -75,10 +76,15 @@ func GamesFor(teamCode string, date time.Time) ([]*Game, error) {
 	return games, nil
 }
 
+// IsFinal returns true if the game status is Final.
+func (game *Game) IsFinal() bool {
+	return game.Status == "Final"
+}
+
 // AllInnings fetches the inning/innings_all.xml file from gameday servers and fills in all the
 // structs beneath, all the way down to the pitches.
 func (game *Game) AllInnings() *AllInnings {
-	if len(game.allInnings.AtBat) == 0 {
+	if game.IsFinal() && len(game.allInnings.AtBat) == 0 {
 		game.load("/inning/inning_all.xml", &game.allInnings)
 	}
 	return &game.allInnings
@@ -86,7 +92,7 @@ func (game *Game) AllInnings() *AllInnings {
 
 // Boxscore fetches the boxscore.xml file from the gameday servers and fills in all the structs beneath.
 func (game *Game) Boxscore() *Boxscore {
-	if len(game.boxscore.GameID) == 0 {
+	if game.IsFinal() && len(game.boxscore.GameID) == 0 {
 		game.load("/boxscore.xml", &game.boxscore)
 	}
 	return &game.boxscore
@@ -94,7 +100,7 @@ func (game *Game) Boxscore() *Boxscore {
 
 // HitChart fetches the inning/inning_hit.xml file from gameday servers
 func (game *Game) HitChart() *HitChart {
-	if len(game.hitChart.Hips) == 0 {
+	if game.IsFinal() && len(game.hitChart.Hips) == 0 {
 		game.load("/inning/inning_hit.xml", &game.hitChart)
 	}
 	return &game.hitChart
