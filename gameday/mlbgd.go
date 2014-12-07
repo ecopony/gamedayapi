@@ -41,7 +41,11 @@ func main() {
 			fmt.Println("Date must be in the format 2006-01-02")
 			os.Exit(1)
 		}
-		game, _ := gamedayapi.GameFor(teamCode, date)
+		game, err := gamedayapi.GameFor(teamCode, date)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 		game.EagerLoad()
 		fmt.Println("Game files saved to " + gamedayapi.BaseCachePath() + game.GameDataDirectory)
 	} else {
