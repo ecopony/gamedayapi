@@ -7,8 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 	"strconv"
+	"time"
 )
 
 // Epg represents the epg.xml file that is in the root of each day's directory.
@@ -24,7 +24,7 @@ type Epg struct {
 // The Epg is how the API finds the game directory for a game on a given day.
 func EpgFor(date time.Time) *Epg {
 	var epg Epg
-	cachedFilePath := baseCachePath() + "/" + strconv.Itoa(date.Year()) + "/"
+	cachedFilePath := BaseCachePath() + "/" + strconv.Itoa(date.Year()) + "/"
 	cachedFileName := epgCacheFileName(date)
 
 	if _, err := os.Stat(cachedFilePath + cachedFileName); os.IsNotExist(err) {

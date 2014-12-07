@@ -5,42 +5,48 @@ import (
 	"log"
 	"os"
 	"time"
+	"fmt"
 )
+
+var validCommands = map[string]bool {
+	"game": true,
+//	"games-for-team-and-year": true,
+//	"games-for-team-and-years": true,
+}
 
 func main() {
 	args := os.Args[1:]
-	if len(args) != 2 {
-		log.Fatal("Usage: mlbgd teamCode date")
+
+	if len(args) <= 2 {
+		fmt.Println("Usage: mlbgd <command> <team code> <date|year(s)>")
+		os.Exit(1)
 	}
 
-	teamCode := args[0]
-	date, err := time.Parse("2006-01-02", args[1])
-	if err != nil {
-		log.Fatal("Date must be in the format 2006-01-02")
-	}
+	command := args[0]
+	if !isCommandValid(command) {
+		fmt.Println(fmt.Sprintf("%s is not a valid command. Valid commands:", command))
 
-	game, _ := gamedayapi.GameFor(teamCode, date)
-	log.Println(game.GameDataDirectory)
-	log.Println(game.Boxscore().GameID)
-	log.Println(game.AllInnings().Innings[0].Top.AtBats[0].Pitches[0].Des)
-	log.Println(game.HitChart().Hips[0].X)
-
-	//  Uncommenting these will execute batch fetch operations. These will be moving to their own commands at some point.
-//		gamedayapi.FetchByTeamAndYear("sea", 2014, exampleOfPullingDownAllFilesForGame)
-//		gamedayapi.FetchByTeamAndYears("sea", []int{2012, 2013, 2014}, exampleOfNavigatingAllPitches)
-}
-
-func exampleOfNavigatingAllPitches(game *gamedayapi.Game) {
-	log.Println(">>>> " + game.ID + " <<<<")
-	for _, inning := range game.AllInnings().Innings {
-		for _, atBat := range inning.AtBats() {
-			for _, pitch := range atBat.Pitches {
-				log.Println("> " + pitch.Des)
-			}
+		for k, _ := range validCommands {
+			fmt.Println(fmt.Sprintf("\t%s", k))
 		}
+
+		os.Exit(1)
+	}
+
+	teamCode := args[1]
+
+	if command == "game" {
+		date, err := time.Parse("2006-01-02", args[2])
+		if err != nil {
+			fmt.Println("Date must be in the format 2006-01-02")
+			os.Exit(1)
+		}
+		game, _ := gamedayapi.GameFor(teamCode, date)
+		game.EagerLoad()
+		fmt.Println("Game files saved to " + gamedayapi.BaseCachePath() + game.GameDataDirectory)
 	}
 }
 
-func exampleOfPullingDownAllFilesForGame(game *gamedayapi.Game) {
-	game.EagerLoad()
+func isCommandValid(command string) bool {
+	return validCommands[command]
 }

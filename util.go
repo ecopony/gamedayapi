@@ -1,10 +1,10 @@
 package gamedayapi
 
 import (
+	"fmt"
 	"log"
 	"os/user"
 	"time"
-	"fmt"
 )
 
 const (
@@ -17,6 +17,11 @@ const (
 	// GamedayBasePath is the base path of the MLB gameday files
 	GamedayBasePath = "/components/game/mlb"
 )
+
+// BaseCachePath returns the local directory where gameday files are cached.
+func BaseCachePath() string {
+	return homeDir() + "/go-gameday-cache"
+}
 
 func datePath(date time.Time) string {
 	return fmt.Sprintf("/year_%02d/month_%02d/day_%02d", date.Year(), date.Month(), date.Day())
@@ -32,10 +37,6 @@ func homeDir() string {
 		log.Fatal(err)
 	}
 	return usr.HomeDir
-}
-
-func baseCachePath() string {
-	return homeDir() + "/go-gameday-cache"
 }
 
 func check(e error) {

@@ -112,7 +112,7 @@ func (game *Game) EagerLoad() {
 
 func (game Game) load(fileName string, val interface{}) {
 	filePath := game.FetchableDataDirectory() + fileName
-	localFilePath := baseCachePath() + filePath
+	localFilePath := BaseCachePath() + filePath
 	if _, err := os.Stat(localFilePath); os.IsNotExist(err) {
 		log.Println("Cache miss on " + localFilePath)
 		fetchAndCache(filePath, val)
@@ -150,7 +150,7 @@ func fetchAndCache(filePath string, val interface{}) {
 }
 
 func cacheFile(filePath string, body []byte) {
-	localCachePath := baseCachePath() + filePath[0:s.LastIndex(filePath, "/")]
+	localCachePath := BaseCachePath() + filePath[0:s.LastIndex(filePath, "/")]
 	os.MkdirAll(localCachePath, (os.FileMode)(0775))
 	f, err := os.Create(localCachePath + filePath[s.LastIndex(filePath, "/"):])
 	f.Write(body)
