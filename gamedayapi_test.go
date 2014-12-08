@@ -18,6 +18,11 @@ func assertEquals(t *testing.T, a interface{}, b interface{}) {
 	}
 }
 
+func TestYear(t *testing.T) {
+	game := GameForTest()
+	assertEquals(t, game.Year(), 2014)
+}
+
 func TestFetchableDataDirectory(t *testing.T) {
 	game := GameForTest()
 	assertEquals(t, game.FetchableDataDirectory(), "/components/game/mlb/year_2014/month_06/day_22/gid_2014_06_22_seamlb_kcamlb_1")

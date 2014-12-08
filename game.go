@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	s "strings"
 	"time"
 )
@@ -51,6 +52,8 @@ type Game struct {
 	allInnings AllInnings
 	boxscore   Boxscore
 	hitChart   HitChart
+
+	year int
 }
 
 // GameFor will return a pointer to a game instance for the team code and date provided.
@@ -114,6 +117,17 @@ func (game *Game) EagerLoad() {
 	game.AllInnings()
 	game.Boxscore()
 	game.HitChart()
+}
+
+// Year returns the year in which the game was played.
+// Convenience method. Not a direct Gameday attribute.
+func (game *Game) Year() int {
+	if game.year == 0 {
+		idPieces := s.Split(game.ID, "/")
+		year, _ := strconv.Atoi(idPieces[0])
+		game.year = year
+	}
+	return game.year
 }
 
 func (game Game) load(fileName string, val interface{}) {
