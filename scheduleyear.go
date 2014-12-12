@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -43,6 +44,7 @@ func OpeningAndFinalDatesForYear(year int) (time.Time, time.Time) { // return an
 
 }
 
+// TeamsForYear returns a list of valid team codes for the given year, sorted in alphabetical order.
 func TeamsForYear(year int) []string {
 	teams := make([]string, 0, 30)
 	scheduleFilePath, err := scheduleFilePath(year)
@@ -59,11 +61,13 @@ func TeamsForYear(year int) []string {
 	for scanner.Scan() {
 		line := scanner.Text()
 		teamFromLine := firstTeamFromScheduleLine(line)
-		teams = AppendIfMissing(teams, teamFromLine)
+		teams = appendIfMissing(teams, teamFromLine)
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
+
+	sort.Strings(teams)
 	return teams
 }
 

@@ -45,7 +45,7 @@ func check(e error) {
 	}
 }
 
-func AppendIfMissing(slice []string, i string) []string {
+func appendIfMissing(slice []string, i string) []string {
 	for _, ele := range slice {
 		if ele == i {
 			return slice
