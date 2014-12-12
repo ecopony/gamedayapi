@@ -8,34 +8,25 @@ import (
 	"time"
 )
 
-var validCommands = map[string]bool{
-	"game": true,
-	"games-for-team-and-year":  true,
-	"games-for-team-and-years": true,
-}
+var commands = []string{"game", "games-for-team-and-year", "games-for-team-and-years", "help", "valid-teams-for-year"}
 
 func main() {
 	args := os.Args[1:]
-
-	if len(args) <= 2 {
-		fmt.Println("Usage: mlbgd <command> <team code> <date|year(s)>")
-		os.Exit(1)
-	}
-
 	command := args[0]
 	if !isCommandValid(command) {
 		fmt.Println(fmt.Sprintf("%s is not a valid command. Valid commands:", command))
-
-		for k := range validCommands {
-			fmt.Println(fmt.Sprintf("\t%s", k))
-		}
-
+		printValidCommands()
 		os.Exit(1)
 	}
 
-	teamCode := args[1]
+	if command == "help" {
+		printValidCommands()
+		os.Exit(0)
+	}
 
 	if command == "game" {
+		validateArgLength(args, 2)
+		teamCode := args[1]
 		date, err := time.Parse("2006-01-02", args[2])
 		if err != nil {
 			fmt.Println("Date must be in the format 2006-01-02")
@@ -48,7 +39,18 @@ func main() {
 		}
 		game.EagerLoad()
 		fmt.Println("Game files saved to " + gamedayapi.BaseCachePath() + game.GameDataDirectory)
+	} else if command == "valid-teams-for-year" {
+		validateArgLength(args, 1)
+		yearArg := args[1]
+		year, err := strconv.Atoi(yearArg)
+		if err != nil {
+			fmt.Println("Year is not valid")
+		}
+		teams := gamedayapi.TeamsForYear(year)
+		fmt.Println(teams)
 	} else {
+		validateArgLength(args, 2)
+		teamCode := args[1]
 		yearArgs := args[2:]
 		var years []int
 		for i := 0; i < len(yearArgs); i++ {
@@ -62,11 +64,35 @@ func main() {
 	}
 }
 
-func isCommandValid(command string) bool {
-	return validCommands[command]
-}
-
 func eagerLoadGame(game *gamedayapi.Game) {
 	game.EagerLoad()
 	fmt.Println("Game files saved to " + gamedayapi.BaseCachePath() + game.GameDataDirectory)
+}
+
+func isCommandValid(command string) bool {
+	for _, validCommand := range commands {
+		if command == validCommand {
+			return true
+		}
+	}
+	return false
+}
+
+func printUsage() {
+	fmt.Println("Usage: mlbgd <command> [<team code>] [<date|year(s)>]")
+}
+
+func printValidCommands() {
+	printUsage()
+	fmt.Println("Valid commands:")
+	for _, validCommand := range commands {
+		fmt.Println(fmt.Sprintf("\t%s", validCommand))
+	}
+}
+
+func validateArgLength(args []string, validLength int) {
+	if len(args) <= validLength {
+		printUsage()
+		os.Exit(1)
+	}
 }
