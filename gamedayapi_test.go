@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 	"time"
+	"fmt"
 )
 
 func GameForTest() *Game {
@@ -41,4 +42,18 @@ func TestDoubleheaders(t *testing.T) {
 	assertEquals(t, len(games), 2)
 	assertEquals(t, games[0].Gameday, "2014_05_07_seamlb_oakmlb_1")
 	assertEquals(t, games[1].Gameday, "2014_05_07_seamlb_oakmlb_2")
+}
+
+func TestNoGamesThatDay(t *testing.T) {
+	date, _ := time.Parse("2006-01-02", "2014-03-22")
+	games, err := GamesFor("sea", date)
+	assertEquals(t, fmt.Sprint(err), "[sea] doesn't have a game on [20140322]")
+	assertEquals(t, len(games), 0)
+}
+
+func TestTeamsForScheduleYear(t *testing.T) {
+	teams := TeamsForYear(2014)
+	assertEquals(t, len(teams), 30)
+	assertEquals(t, teams[0], "LAN")
+	assertEquals(t, teams[29], "MIA")
 }

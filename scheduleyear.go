@@ -15,13 +15,11 @@ import (
 // day of the season
 func OpeningAndFinalDatesForYear(year int) (time.Time, time.Time) { // return an error
 	var openingDay, finalDay time.Time
-	absPath, _ := filepath.Abs("../gamedayapi/schedules")
-	var buffer bytes.Buffer
-	buffer.WriteString(absPath)
-	buffer.WriteString("/")
-	buffer.WriteString(strconv.Itoa(year))
-	buffer.WriteString("SKED.TXT")
-	f, err := os.Open(buffer.String())
+	scheduleFilePath, err := scheduleFilePath(year)
+	if err != nil {
+		log.Fatal(err)
+	}
+	f, err := os.Open(scheduleFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -45,6 +43,43 @@ func OpeningAndFinalDatesForYear(year int) (time.Time, time.Time) { // return an
 
 }
 
+func TeamsForYear(year int) []string {
+	teams := make([]string, 0, 30)
+	scheduleFilePath, err := scheduleFilePath(year)
+	if err != nil {
+		log.Fatal(err)
+	}
+	f, err := os.Open(scheduleFilePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := scanner.Text()
+		teamFromLine := firstTeamFromScheduleLine(line)
+		teams = AppendIfMissing(teams, teamFromLine)
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return teams
+}
+
+func scheduleFilePath(year int) (string, error) {
+	absPath, err := filepath.Abs("../gamedayapi/schedules")
+	if err != nil {
+		return "", err
+	}
+	var buffer bytes.Buffer
+	buffer.WriteString(absPath)
+	buffer.WriteString("/")
+	buffer.WriteString(strconv.Itoa(year))
+	buffer.WriteString("SKED.TXT")
+	return buffer.String(), nil
+}
+
 // Parses a line from the Retrosheet schedule files. Lines look like:
 // "20110331","0","Thu","MIL","NL",1,"CIN","NL",1,"d","",""
 func dateFromScheduleLine(line string) time.Time {
@@ -52,4 +87,8 @@ func dateFromScheduleLine(line string) time.Time {
 	month, _ := strconv.Atoi(line[5:7])
 	day, _ := strconv.Atoi(line[7:9])
 	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+}
+
+func firstTeamFromScheduleLine(line string) string {
+	return line[22:25]
 }
