@@ -8,7 +8,13 @@ import (
 	"time"
 )
 
-var commands = []string{"game", "games-for-team-and-year", "games-for-team-and-years", "help", "valid-teams-for-year"}
+var commands = []string{"game",
+	"games-for-team-and-year",
+	"games-for-team-and-years",
+	"games-for-year",
+	"help",
+	"valid-teams-for-year",
+}
 
 func main() {
 	args := os.Args[1:]
@@ -39,6 +45,18 @@ func main() {
 		}
 		game.EagerLoad()
 		fmt.Println("Game files saved to " + gamedayapi.BaseCachePath() + game.GameDataDirectory)
+	} else if command == "games-for-year" {
+		validateArgLength(args, 1)
+		yearArg := args[1]
+		year, err := strconv.Atoi(yearArg)
+		if err != nil {
+			fmt.Println("Year is not valid")
+		}
+		teams := gamedayapi.TeamsForYear(year)
+		for _, team := range teams {
+			fmt.Println(team)
+			gamedayapi.FetchByTeamAndYear(team, year, eagerLoadGame) // No goroutines here yet.
+		}
 	} else if command == "valid-teams-for-year" {
 		validateArgLength(args, 1)
 		yearArg := args[1]
@@ -48,7 +66,7 @@ func main() {
 		}
 		teams := gamedayapi.TeamsForYear(year)
 		fmt.Println(teams)
-	} else {
+	} else {	// games-for-team-and-year or games-for-team-and-years
 		validateArgLength(args, 2)
 		teamCode := args[1]
 		yearArgs := args[2:]

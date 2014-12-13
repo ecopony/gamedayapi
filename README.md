@@ -28,6 +28,13 @@ To fetch files for multiple seasons for a team:
 
     ./mlbgd games-for-team-and-years sea 2012 2013 2014
 
+To fetch all games for all teams for a given year:
+
+    ./mlbgd games-for-year 2014
+
+To see a list of valid team codes for a given year:
+
+    ./mlbgd valid-teams-for-year 2014
 
 Using the API from your own go code
 ---------
@@ -43,8 +50,6 @@ To work with a game:
     fmt.Println(game.Venue)
     fmt.Println(game.HomeTeamName)
     ...
-
-    // to come... a list of valid team codes
 
 To operate on all games in a season:
 

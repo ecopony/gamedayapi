@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
+	s "strings"
 	"time"
 )
 
@@ -94,5 +95,5 @@ func dateFromScheduleLine(line string) time.Time {
 }
 
 func firstTeamFromScheduleLine(line string) string {
-	return line[22:25]
+	return s.ToLower(line[22:25])
 }
