@@ -52,6 +52,7 @@ type Game struct {
 	allInnings AllInnings
 	boxscore   Boxscore
 	hitChart   HitChart
+	players    Players
 
 	year int
 }
@@ -109,6 +110,14 @@ func (game *Game) HitChart() *HitChart {
 	return &game.hitChart
 }
 
+// Players fetches the players.xml file from gameday servers
+func (game *Game) Players() *Players {
+	if game.IsFinal() && len(game.players.Date) == 0 {
+		game.load("/players.xml", &game.players)
+	}
+	return &game.players
+}
+
 //func (game *Game) InningScores() *InningScores {}
 
 // EagerLoad will eagerly load all of the files that the library pulls from the MLB gameday servers.
@@ -117,6 +126,7 @@ func (game *Game) EagerLoad() {
 	game.AllInnings()
 	game.Boxscore()
 	game.HitChart()
+	game.Players()
 }
 
 // Year returns the year in which the game was played.
