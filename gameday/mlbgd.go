@@ -26,7 +26,7 @@ func main() {
 
 func initializeCommands() {
 	commands["game"] = game
-	commands["games-for-team-and-year"] = gameForTeamAndYears
+	commands["games-for-team-and-years"] = gameForTeamAndYears
 	commands["games-for-year"] = gamesForYear
 	commands["help"] = help
 	commands["valid-teams-for-year"] = validTeamsForYear
@@ -73,25 +73,7 @@ func game(args []string) {
 	fmt.Println("Game files saved to " + gamedayapi.BaseCachePath() + game.GameDataDirectory)
 }
 
-func gameForTeamAndYear(args []string) {
-	validateArgLength(args, 1)
-	yearArg := args[1]
-	year, err := strconv.Atoi(yearArg)
-	if err != nil {
-		fmt.Println("Year is not valid")
-	}
-	teams := gamedayapi.TeamsForYear(year)
-	for _, team := range teams {
-		fmt.Println(team)
-		gamedayapi.FetchByTeamAndYear(team, year, eagerLoadGame) // No goroutines here yet.
-	}
-}
-
 func gameForTeamAndYears(args []string) {
-	gamesFor(args)
-}
-
-func gamesForYear(args []string) {
 	gamesFor(args)
 }
 
@@ -108,6 +90,20 @@ func gamesFor(args []string) {
 		years = append(years, year)
 	}
 	gamedayapi.FetchByTeamAndYears(teamCode, years, eagerLoadGame)
+}
+
+func gamesForYear(args []string) {
+	validateArgLength(args, 1)
+	yearArg := args[1]
+	year, err := strconv.Atoi(yearArg)
+	if err != nil {
+		fmt.Println("Year is not valid")
+	}
+	teams := gamedayapi.TeamsForYear(year)
+	for _, team := range teams {
+		fmt.Println(team)
+		gamedayapi.FetchByTeamAndYear(team, year, eagerLoadGame) // No goroutines here yet.
+	}
 }
 
 func help(args []string) {
