@@ -19,7 +19,7 @@ import (
 type Game struct {
 	AwayAPMP        string `xml:"away_ampm,attr"`
 	AwayCode        string `xml:"away_code,attr"`
-	AwayFileCode	string `xml:"away_file_code,attr"`
+	AwayFileCode    string `xml:"away_file_code,attr"`
 	AwayLoss        string `xml:"away_loss,attr"`
 	AwayTeamCity    string `xml:"away_team_city,attr"`
 	AwayTeamID      string `xml:"away_team_id,attr"`
@@ -30,7 +30,7 @@ type Game struct {
 	CalendarEventID string `xml:"calendar_event_id,attr"`
 	HomeAMPM        string `xml:"home_ampm,attr"`
 	HomeCode        string `xml:"home_code,attr"`
-	HomeFileCode	string `xml:"home_file_code,attr"`
+	HomeFileCode    string `xml:"home_file_code,attr"`
 	HomeLoss        string `xml:"home_loss,attr"`
 	HomeTeamCity    string `xml:"home_team_city,attr"`
 	HomeTeamID      string `xml:"home_team_id,attr"`

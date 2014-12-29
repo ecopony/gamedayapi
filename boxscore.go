@@ -25,12 +25,12 @@ type Boxscore struct {
 	VenueID       string   `xml:"venue_id,attr"`
 	VenueName     string   `xml:"venue_name,attr"`
 
-	Linescores []Linescore `xml:"linescore"`
+	Linescore Linescore `xml:"linescore"`
 }
 
 // Linescore represents the linescore under the boxscore, not the individual linescore.xml file.
 type Linescore struct {
-	XMLName        xml.Name `xml:"linescore"`
+	XMLName      xml.Name `xml:"linescore"`
 	AwayTeamRuns string   `xml:"away_team_runs,attr"`
 	HomeTeamRuns string   `xml:"home_team_runs,attr"`
 }
