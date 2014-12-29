@@ -31,6 +31,6 @@ type Boxscore struct {
 // Linescore represents the linescore under the boxscore, not the individual linescore.xml file.
 type Linescore struct {
 	XMLName        xml.Name `xml:"linescore"`
-	AwayInningRuns string   `xml:"away_inning_runs,attr"`
-	HomeInningRuns string   `xml:"home_inning_runs,attr"`
+	AwayTeamRuns string   `xml:"away_team_runs,attr"`
+	HomeTeamRuns string   `xml:"home_team_runs,attr"`
 }
