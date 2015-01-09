@@ -37,9 +37,10 @@ type Linescore struct {
 	InningLineScores []InningLineScore `xml:"inning_line_score"`
 }
 
+// InningLineScore represents the individual innings in the linescore.
 type InningLineScore struct {
-	XMLName      xml.Name `xml:"inning_line_score"`
-	Away string   `xml:"away,attr"`
-	Home string   `xml:"home,attr"`
-	Inning string   `xml:"inning,attr"`
+	XMLName xml.Name `xml:"inning_line_score"`
+	Away    string   `xml:"away,attr"`
+	Home    string   `xml:"home,attr"`
+	Inning  string   `xml:"inning,attr"`
 }
