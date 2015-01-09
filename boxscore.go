@@ -33,4 +33,13 @@ type Linescore struct {
 	XMLName      xml.Name `xml:"linescore"`
 	AwayTeamRuns string   `xml:"away_team_runs,attr"`
 	HomeTeamRuns string   `xml:"home_team_runs,attr"`
+
+	InningLineScores []InningLineScore `xml:"inning_line_score"`
+}
+
+type InningLineScore struct {
+	XMLName      xml.Name `xml:"inning_line_score"`
+	Away string   `xml:"away,attr"`
+	Home string   `xml:"home,attr"`
+	Inning string   `xml:"inning,attr"`
 }
