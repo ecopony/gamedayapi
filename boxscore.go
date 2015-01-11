@@ -25,7 +25,9 @@ type Boxscore struct {
 	VenueID       string   `xml:"venue_id,attr"`
 	VenueName     string   `xml:"venue_name,attr"`
 
-	Linescore Linescore `xml:"linescore"`
+	Linescore Linescore  `xml:"linescore"`
+	Batting   []Batting  `xml:"batting"`
+	Pitching  []Pitching `xml:"pitching"`
 }
 
 // Linescore represents the linescore under the boxscore, not the individual linescore.xml file.
@@ -43,4 +45,38 @@ type InningLineScore struct {
 	Away    string   `xml:"away,attr"`
 	Home    string   `xml:"home,attr"`
 	Inning  string   `xml:"inning,attr"`
+}
+
+// Batting represents the batting elements in the boxscore.
+type Batting struct {
+	XMLName  xml.Name `xml:"batting"`
+	TeamFlag string   `xml:"team_flag,attr"`
+	AB       string   `xml:"ab,attr"`
+	R        string   `xml:"r,attr"`
+	H        string   `xml:"h,attr"`
+	D        string   `xml:"d,attr"`
+	T        string   `xml:"t,attr"`
+	HR       string   `xml:"hr,attr"`
+	RBI      string   `xml:"rbi,attr"`
+	BB       string   `xml:"bb,attr"`
+	PO       string   `xml:"po,attr"`
+	DA       string   `xml:"da,attr"`
+	SO       string   `xml:"so,attr"`
+	LOB      string   `xml:"lob,attr"`
+	AVG      string   `xml:"avg,attr"`
+}
+
+// Pitching represents the pitching elements in the boxscore.
+type Pitching struct {
+	XMLName  xml.Name `xml:"pitching"`
+	TeamFlag string   `xml:"team_flag,attr"`
+	Out      string   `xml:"out,attr"`
+	H        string   `xml:"h,attr"`
+	R        string   `xml:"r,attr"`
+	ER       string   `xml:"er,attr"`
+	BB       string   `xml:"bb,attr"`
+	SO       string   `xml:"so,attr"`
+	HR       string   `xml:"hr,attr"`
+	BF       string   `xml:"bf,attr"`
+	ERA      string   `xml:"era,attr"`
 }
