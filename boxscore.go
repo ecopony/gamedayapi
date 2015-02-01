@@ -79,4 +79,39 @@ type Pitching struct {
 	HR       string   `xml:"hr,attr"`
 	BF       string   `xml:"bf,attr"`
 	ERA      string   `xml:"era,attr"`
+
+	Pitchers []Pitcher `xml:"pitcher"`
+}
+
+// Pitcher represents the pitcher elements in the boxscore.
+type Pitcher struct {
+	XMLName              xml.Name `xml:"pitcher"`
+	ID                   string   `xml:"id,attr"`
+	Name                 string   `xml:"name,attr"`
+	NameDisplayFirstLast string   `xml:"name_display_first_last,attr"`
+	Pos                  string   `xml:"pos,attr"`
+	Out                  string   `xml:"out,attr"`
+	BF                   string   `xml:"bf,attr"`
+	ER                   string   `xml:"er,attr"`
+	R                    string   `xml:"r,attr"`
+	H                    string   `xml:"h,attr"`
+	SO                   string   `xml:"so,attr"`
+	HR                   string   `xml:"hr,attr"`
+	BB                   string   `xml:"bb,attr"`
+	NP                   string   `xml:"np,attr"`
+	S                    string   `xml:"s,attr"`
+	W                    string   `xml:"w,attr"`
+	L                    string   `xml:"l,attr"`
+	SV                   string   `xml:"sv,attr"`
+	BS                   string   `xml:"bs,attr"`
+	HLD                  string   `xml:"hld,attr"`
+	SIP                  string   `xml:"s_ip,attr"`
+	SH                   string   `xml:"s_h,attr"`
+	SR                   string   `xml:"s_r,attr"`
+	SER                  string   `xml:"s_er,attr"`
+	SBB                  string   `xml:"s_bb,attr"`
+	SSO                  string   `xml:"s_so,attr"`
+	ERA                  string   `xml:"era,attr"`
+	Win                  string   `xml:"win,attr"`
+	Note                 string   `xml:"note,attr"`
 }
