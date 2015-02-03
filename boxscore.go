@@ -64,6 +64,46 @@ type Batting struct {
 	SO       string   `xml:"so,attr"`
 	LOB      string   `xml:"lob,attr"`
 	AVG      string   `xml:"avg,attr"`
+
+	Batters []Batter `xml:"batter"`
+}
+
+// Batter represents the batter elements in the boxscore.
+type Batter struct {
+	XMLName              xml.Name `xml:"batter"`
+	ID                   string   `xml:"id,attr"`
+	Name                 string   `xml:"name,attr"`
+	NameDisplayFirstLast string   `xml:"name_display_first_last,attr"`
+	Pos                  string   `xml:"pos,attr"`
+	BO                   string   `xml:"bo,attr"`
+	AB                   string   `xml:"ab,attr"`
+	PO                   string   `xml:"po,attr"`
+	R                    string   `xml:"r,attr"`
+	A                    string   `xml:"a,attr"`
+	BB                   string   `xml:"bb,attr"`
+	SAC                  string   `xml:"sac,attr"`
+	T                    string   `xml:"t,attr"`
+	SF                   string   `xml:"sf,attr"`
+	H                    string   `xml:"h,attr"`
+	E                    string   `xml:"e,attr"`
+	D                    string   `xml:"d,attr"`
+	HBP                  string   `xml:"hbp,attr"`
+	SO                   string   `xml:"so,attr"`
+	HR                   string   `xml:"hr,attr"`
+	RBI                  string   `xml:"rbi,attr"`
+	LOB                  string   `xml:"lob,attr"`
+	FLDG                 string   `xml:"fldg,attr"`
+	SB                   string   `xml:"sb,attr"`
+	CS                   string   `xml:"cs,attr"`
+	SHR                  string   `xml:"s_hr,attr"`
+	SRBI                 string   `xml:"s_rbi,attr"`
+	SH                   string   `xml:"s_h,attr"`
+	SBB                  string   `xml:"s_bb,attr"`
+	SR                   string   `xml:"s_r,attr"`
+	SSO                  string   `xml:"s_so,attr"`
+	AVG                  string   `xml:"savg,attr"`
+	GO                   string   `xml:"go,attr"`
+	AO                   string   `xml:"ao,attr"`
 }
 
 // Pitching represents the pitching elements in the boxscore.
