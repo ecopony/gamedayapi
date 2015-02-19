@@ -54,6 +54,6 @@ func TestNoGamesThatDay(t *testing.T) {
 func TestTeamsForScheduleYear(t *testing.T) {
 	teams := TeamsForYear(2014)
 	assertEquals(t, len(teams), 30)
-	assertEquals(t, teams[0], "ANA")
-	assertEquals(t, teams[29], "WAS")
+	assertEquals(t, teams[0], "ana")
+	assertEquals(t, teams[29], "was")
 }

@@ -73,12 +73,15 @@ func TeamsForYear(year int) []string {
 }
 
 func scheduleFilePath(year int) (string, error) {
-	absPath, err := filepath.Abs("../gamedayapi/schedules")
+	absPath, err := filepath.Abs("")
+	srcPos := s.Index(absPath, "/go/src/")
+	srcPath := absPath[0:srcPos+8]
+	schedulePath := srcPath + "github.com/ecopony/gamedayapi/schedules"
 	if err != nil {
 		return "", err
 	}
 	var buffer bytes.Buffer
-	buffer.WriteString(absPath)
+	buffer.WriteString(schedulePath)
 	buffer.WriteString("/")
 	buffer.WriteString(strconv.Itoa(year))
 	buffer.WriteString("SKED.TXT")
