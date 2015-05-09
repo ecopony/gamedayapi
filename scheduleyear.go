@@ -75,7 +75,7 @@ func TeamsForYear(year int) []string {
 func scheduleFilePath(year int) (string, error) {
 	absPath, err := filepath.Abs("")
 	srcPos := s.Index(absPath, "/go/src/")
-	srcPath := absPath[0:srcPos+8]
+	srcPath := absPath[0 : srcPos+8]
 	schedulePath := srcPath + "github.com/ecopony/gamedayapi/schedules"
 	if err != nil {
 		return "", err

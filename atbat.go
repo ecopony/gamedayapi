@@ -19,6 +19,8 @@ type AtBat struct {
 	Des          string   `xml:"des,attr"`
 	DesEs        string   `xml:"des_es,attr"`
 	Event        string   `xml:"event,attr"`
+	HomeTeamRuns string   `xml:"home_team_runs,attr"`
+	AwayTeamRuns string   `xml:"away_team_runs,attr"`
 
 	Pitches []Pitch `xml:"pitch"`
 }
