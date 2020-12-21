@@ -69,6 +69,15 @@ To operate on all games in a season:
 The function passed into FetchByTeamAndYears will be passed each game. This could be used to do analysis to save data to
 an alternate format or something else fun and entertaining and within the limitations of the usage restrictions.
 
+Adding schedule files
+---------
+
+The schedule files come from Retrosheet. Updated schedule files can be found here:
+
+https://www.retrosheet.org/schedule/
+
+Add them as needed to your local repo. Feel free to submit a PR for new files.
+
 
 Usage Restriction
 =================
